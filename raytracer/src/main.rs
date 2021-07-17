@@ -30,8 +30,8 @@ fn main() {
     let spp = 100;
     let max_depth = 50;
 
-    let mut img: RgbImage = ImageBuffer::new(1024, 512);
-    let bar = ProgressBar::new(1024);
+    let mut img: RgbImage = ImageBuffer::new(image_width as u32, image_height as u32);
+    let bar = ProgressBar::new(image_width as u64);
 
     println!("P3\n{0} {1}\n255\n",image_width,image_height);
 
@@ -85,7 +85,7 @@ fn main() {
                 color += ray_color(&r, &world, max_depth);
                 s += 1;
             }
-            let pixel = img.get_pixel_mut(i, j);
+            let pixel = img.get_pixel_mut(i as u32, j as u32);
             let sppf = spp as f64;
             let scale: f64 = 1.0 / sppf;
             let mut r = (color.x * scale).sqrt();
