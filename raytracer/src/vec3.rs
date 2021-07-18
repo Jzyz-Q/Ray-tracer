@@ -43,22 +43,6 @@ impl Vec3 {
         return self.z;
     }
 
-    pub fn elemul(&self, other: Vec3) -> Vec3 {
-        Vec3 {
-            x: self.x * other.x,
-            y: self.y * other.y,
-            z: self.z * other.z,
-        }
-    }
-
-    pub fn cross(&self, other: Vec3) -> Vec3 {
-        Vec3 {
-            x: self.y*other.z - self.z*other.y,
-            y: self.z*other.x - self.x*other.z,
-            z: self.x*other.y - self.y*other.x,
-        }
-    }
-
     pub fn unit(&self) -> Vec3 {
         let tmp_len:f64 = self.length();
 
@@ -123,6 +107,22 @@ pub fn random_unit_vector(rng: &mut ThreadRng) ->Vec3 {
         z,
     );
     return pos;
+}
+
+pub fn elemul(a: Vec3, other: Vec3) -> Vec3 {
+    Vec3 {
+        x: a.x * other.x,
+        y: a.y * other.y,
+        z: a.z * other.z,
+    }
+}
+
+pub fn cross(a: Vec3, other: Vec3) -> Vec3 {
+    Vec3 {
+        x: a.y*other.z - a.z*other.y,
+        y: a.z*other.x - a.x*other.z,
+        z: a.x*other.y - a.y*other.x,
+    }
 }
 
 

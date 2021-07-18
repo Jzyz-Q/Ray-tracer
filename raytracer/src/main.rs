@@ -23,6 +23,8 @@ use crate::material::Dielectric;
 use image::RgbImage;
 use image::ImageBuffer;
 use indicatif::ProgressBar;
+use crate::vec3::elemul;
+use crate::vec3::cross;
 
 fn main() {
     let image_width = 1024;
@@ -129,7 +131,7 @@ fn ray_color(r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
             let cur =  val.mat_ptr.scatter(&r, &val, &mut rng);
             match cur {
                 Some(scattered) => {
-                    let rt = Vec3::elemul(&scattered.att, ray_color(&scattered.ray, &world, depth - 1));
+                    let rt = elemul(scattered.att, ray_color(&scattered.ray, &world, depth - 1));
                     return rt;
                 }
                 None => {
@@ -212,7 +214,7 @@ fn random_scene() -> Hlist {
             if len > 0.9 {
                 if choose_mat < 0.8 {
                     //disfuse
-                    let albedo = random().elemul(random());
+                    let albedo = elemul(random(), random());
                     world.push(Arc::<Sphere>::new(Sphere::new(center, 0.2,
                                Arc::<Lambertian>::new(Lambertian::new(albedo)))));
                 }

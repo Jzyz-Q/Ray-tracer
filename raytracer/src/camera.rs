@@ -1,6 +1,7 @@
 #![allow(warnings, unused)]
 use crate::{ray::Ray, vec3::random_in_unit_disk, vec3::Vec3};
 use rand::rngs::ThreadRng;
+use crate::cross;
 
 // 对一个像素进行多次采样
 #[derive(Clone, Copy, Debug)]
@@ -24,8 +25,8 @@ impl Camera {
         let h_width: f64 = aspect * h_height;
 
         let w1 = (lookfrom - lookat).unit();
-        let u1 = (vup.cross(w1)).unit();
-        let v1 = w1.cross(u1);
+        let u1 = (cross(vup, w1)).unit();
+        let v1 = cross(w1, u1);
 
         Camera {
             sor: lookfrom,
