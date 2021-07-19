@@ -15,7 +15,6 @@ use crate::material::Dielectric;
 use crate::material::Lambertian;
 use crate::material::Metal;
 use crate::ray::Ray;
-use crate::vec3::random_unit_vector;
 use crate::vec3::Vec3;
 use image::ImageBuffer;
 use image::RgbImage;
@@ -74,52 +73,52 @@ fn main() {
     // world.push(foo4);
     // world.push(foo5);
 
-    let mut j = image_height - 1;
-    while (j >= 0) {
-        let mut i = 0;
-        while (i < image_width) {
-            let mut s = 0;
-            let mut i_f = i as f64;
-            let mut j_f = j as f64;
+    let mut _j = image_height - 1;
+    while _j >= 0 {
+        let mut _i = 0;
+        while _i < image_width {
+            let mut _s = 0;
+            let mut i_f = _i as f64;
+            let mut j_f = _j as f64;
             let mut color = Vec3::new(0.0, 0.0, 0.0);
 
-            while (s < spp) {
-                let u: f64 = (i_f + random_double()) / w_f;
-                let v: f64 = (j_f + random_double()) / h_f;
+            while _s < spp {
+                let _u: f64 = (i_f + random_double()) / w_f;
+                let _v: f64 = (j_f + random_double()) / h_f;
                 let mut rng: ThreadRng = rand::thread_rng();
-                let mut r = cam.make_ray(&mut rng, u, v);
+                let mut _r = cam.make_ray(&mut rng, _u, _v);
                 //let r = Ray::new(cam.sor, cam.cor + cam.hor*u + cam.ver*v - cam.sor);
-                color += ray_color(&r, &world, max_depth);
-                s += 1;
+                color += ray_color(&_r, &world, max_depth);
+                _s += 1;
             }
-            let pixel = img.get_pixel_mut(i as u32, j as u32);
+            let pixel = img.get_pixel_mut(_i as u32, _j as u32);
             let sppf = spp as f64;
             let scale: f64 = 1.0 / sppf;
-            let mut r = (color.x * scale).sqrt();
-            let mut g = (color.y * scale).sqrt();
-            let mut b = (color.z * scale).sqrt();
+            let mut _r = (color.x * scale).sqrt();
+            let mut _g = (color.y * scale).sqrt();
+            let mut _b = (color.z * scale).sqrt();
 
-            let e1 = 256.0 * clamp(r, 0.0, 0.999);
-            let e2 = 256.0 * clamp(g, 0.0, 0.999);
-            let e3 = 256.0 * clamp(b, 0.0, 0.999);
+            let e1 = 256.0 * clamp(_r, 0.0, 0.999);
+            let e2 = 256.0 * clamp(_g, 0.0, 0.999);
+            let e3 = 256.0 * clamp(_b, 0.0, 0.999);
 
-            let a = e1 as i32;
-            let b = e2 as i32;
-            let c = e3 as i32;
+            let _a = e1 as i32;
+            let _b = e2 as i32;
+            let _c = e3 as i32;
 
             write_color(&color, spp);
-            *pixel = image::Rgb([a as u8, b as u8, c as u8]);
-            i += 1;
+            *pixel = image::Rgb([_a as u8, _b as u8, _c as u8]);
+            _i += 1;
         }
         bar.inc(1);
-        j -= 1;
+        _j -= 1;
     }
     img.save("output/test.png").unwrap();
     bar.finish();
 }
 
-fn ray_color(r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
-    let mut rec: Option<Hitrecord> = world.hit(&*r, 0.001, std::f64::INFINITY);
+fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
+    let mut rec: Option<Hitrecord> = world.hit(&*_r, 0.001, std::f64::INFINITY);
 
     if depth <= 0 {
         let rt = Vec3::new(0.0, 0.0, 0.0);
@@ -133,7 +132,7 @@ fn ray_color(r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
             //let mut target: Vec3 = val.p + val.n + random_unit_vector(&mut rng);
             //let mut tmp_r = Ray::new(val.p, target - val.p);
             //return ray_color(&tmp_r, &world, depth - 1) * 0.5;
-            let cur = val.mat_ptr.scatter(&r, &val, &mut rng);
+            let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
             match cur {
                 Some(scattered) => {
                     let rt =
@@ -151,38 +150,38 @@ fn ray_color(r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
         }
     }
 
-    let unit_drc: Vec3 = r.drc.unit();
-    let t: f64 = 0.5 * (unit_drc.y + 1.0);
+    let unit_drc: Vec3 = _r.drc.unit();
+    let _t: f64 = 0.5 * (unit_drc.y + 1.0);
     let tmp = Vec3::new(0.5, 0.7, 1.0);
     let one = Vec3::new(1.0, 1.0, 1.0);
-    return one * (1.0 - t) + tmp * t;
+    return one * (1.0 - _t) + tmp * _t;
 }
 
-fn write_color(s: &Vec3, spp: i32) {
+fn write_color(_s: &Vec3, spp: i32) {
     let sppf = spp as f64;
     let scale: f64 = 1.0 / sppf;
-    let r = (scale * s.x).sqrt();
-    let g = (scale * s.y).sqrt();
-    let b = (scale * s.z).sqrt();
+    let _r = (scale * _s.x).sqrt();
+    let _g = (scale * _s.y).sqrt();
+    let _b = (scale * _s.z).sqrt();
 
-    let e1 = 256.0 * clamp(r, 0.0, 0.999);
-    let e2 = 256.0 * clamp(g, 0.0, 0.999);
-    let e3 = 256.0 * clamp(b, 0.0, 0.999);
+    let e1 = 256.0 * clamp(_r, 0.0, 0.999);
+    let e2 = 256.0 * clamp(_g, 0.0, 0.999);
+    let e3 = 256.0 * clamp(_b, 0.0, 0.999);
 
-    let a = e1 as i32;
-    let b = e2 as i32;
-    let c = e3 as i32;
-    print!("{0} {1} {2}\n", a, b, c);
+    let _a = e1 as i32;
+    let _b = e2 as i32;
+    let _c = e3 as i32;
+    println!("{0} {1} {2}", _a, _b, _c);
 }
 
-fn clamp(x: f64, _min: f64, _max: f64) -> f64 {
-    if x < _min {
+fn clamp(_x: f64, _min: f64, _max: f64) -> f64 {
+    if _x < _min {
         return _min;
     }
-    if x > _max {
+    if _x > _max {
         return _max;
     }
-    return x;
+    return _x;
 }
 
 fn random_double() -> f64 {
@@ -218,14 +217,14 @@ fn random_scene() -> Hlist {
         Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.5, 0.5, 0.5))),
     )));
 
-    let i: i32 = 1;
-    let a: i32 = -11;
-    let b: i32 = -11;
-    for a in -11..11 {
-        for b in -11..11 {
+    let _i: i32 = 1;
+    let _a: i32 = -11;
+    let _b: i32 = -11;
+    for _a in -11..11 {
+        for _b in -11..11 {
             let choose_mat: f64 = random_double();
-            let af = a as f64;
-            let bf = b as f64;
+            let af = _a as f64;
+            let bf = _b as f64;
             let center = Vec3::new(af + 0.9 * random_double(), 0.2, bf + 0.9 * random_double());
             let len = (center - Vec3::new(4.0, 0.2, 0.0)).length();
             if len > 0.9 {
