@@ -1,10 +1,14 @@
-use crate::{hittable::Hitrecord, ray::Ray, vec3::{random_unit_vector, Vec3}};
+use crate::{
+    hittable::Hitrecord,
+    ray::Ray,
+    vec3::{random_unit_vector, Vec3},
+};
 use rand::rngs::ThreadRng;
 use rand::Rng;
 
 #[derive(Copy, Clone)]
 pub struct Scatter {
-    pub att: Vec3,     // 光线衰减率
+    pub att: Vec3, // 光线衰减率
     pub ray: Ray,
 }
 
@@ -14,12 +18,14 @@ impl Scatter {
     }
 }
 
-pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {              // 反射
-    return v - n* (2.0 * (v*n));
+pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+    // 反射
+    return v - n * (2.0 * (v * n));
 }
 
-pub fn refract(uv: Vec3, n: Vec3, eoe: f64) -> Vec3 {   // 折射   uv:入射光; n:法向量; eoe:折射率之比(η/η')
-    let cos_t = (-uv)*n;
+pub fn refract(uv: Vec3, n: Vec3, eoe: f64) -> Vec3 {
+    // 折射   uv:入射光; n:法向量; eoe:折射率之比(η/η')
+    let cos_t = (-uv) * n;
     let r_out_parallel: Vec3 = (uv + n * cos_t) * eoe;
     let r_out_perp: Vec3 = -n * (1.0 - r_out_parallel.squared_length()).sqrt();
     return r_out_parallel + r_out_perp;
@@ -31,7 +37,8 @@ pub trait Material: Send + Sync {
 }
 
 #[derive(Copy, Clone)]
-pub struct Lambertian {    // 漫反射材质
+pub struct Lambertian {
+    // 漫反射材质
     pub albedo: Vec3,
 }
 
@@ -52,7 +59,8 @@ impl Material for Lambertian {
 }
 
 #[derive(Copy, Clone)]
-pub struct Metal {        // 金属材质 反射 粗糙
+pub struct Metal {
+    // 金属材质 反射 粗糙
     pub albedo: Vec3,
     pub fuzz: f64,
 }
@@ -73,7 +81,8 @@ impl Metal {
 impl Material for Metal {
     fn scatter(&self, r_in: &Ray, rec: &Hitrecord, rng: &mut ThreadRng) -> Option<Scatter> {
         let red: Vec3 = reflect(r_in.drc.unit(), rec.n);
-        let sed = Ray::new(rec.p,
+        let sed = Ray::new(
+            rec.p,
             red + crate::vec3::random_in_unit_sphere(rng) * self.fuzz,
         );
         let att = self.albedo;
@@ -81,14 +90,13 @@ impl Material for Metal {
 
         if sed.drc * rec.n > 0.0 {
             Some(rt)
-        }
-        else {
+        } else {
             None
         }
     }
 }
 
-#[derive(Copy, Clone)]   // 玻璃 只发生折射
+#[derive(Copy, Clone)] // 玻璃 只发生折射
 pub struct Dielectric {
     ref_idx: f64,
 }
@@ -107,11 +115,10 @@ impl Dielectric {
 
 impl Material for Dielectric {
     fn scatter(&self, r_in: &Ray, rec: &Hitrecord, rng: &mut ThreadRng) -> Option<Scatter> {
-        let att = Vec3::new(1.0,1.0,1.0);
+        let att = Vec3::new(1.0, 1.0, 1.0);
         let eoe = if rec.front_face {
             1.0 / self.ref_idx
-        }
-        else {
+        } else {
             self.ref_idx
         };
 
@@ -120,7 +127,8 @@ impl Material for Dielectric {
         let cos_theta: f64 = if cos < 1.0 { cos } else { 1.0 };
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
-        if eoe * sin_theta > 1.0 {   // must reflect
+        if eoe * sin_theta > 1.0 {
+            // must reflect
             let reflected: Vec3 = reflect(unit_drc, rec.n);
             let sed = Ray::new(rec.p, reflected);
             let rt = Scatter::new(att, sed);
@@ -137,7 +145,7 @@ impl Material for Dielectric {
         }
 
         let refracted = refract(unit_drc, rec.n, eoe);
-        let sed = Ray::new(rec.p ,refracted);
+        let sed = Ray::new(rec.p, refracted);
         let rt = Scatter::new(att, sed);
         return Some(rt);
     }

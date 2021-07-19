@@ -1,6 +1,6 @@
 #![allow(warnings, unused)]
 
-use crate::{ray::Ray, vec3::Vec3, material::Material};
+use crate::{material::Material, ray::Ray, vec3::Vec3};
 use std::ops::Mul;
 pub use std::sync::Arc;
 
@@ -8,7 +8,7 @@ pub trait Object: Send + Sync {
     fn hit(&self, ray: &Ray, t1_min: f64, t1_max: f64) -> Option<Hitrecord>;
     //fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB>;
     //fn get_background(&self, t: f64) -> Color;
-}         
+}
 
 #[derive(Clone)]
 pub struct Hitrecord {
@@ -17,7 +17,7 @@ pub struct Hitrecord {
     pub t: f64,
     pub u: f64,
     pub v: f64,
-    pub front_face: bool,            //法相与入射方向相反
+    pub front_face: bool, //法相与入射方向相反
     pub mat_ptr: Arc<dyn Material>,
 }
 
@@ -34,14 +34,20 @@ impl Hitrecord {
         }
     }
 
-    pub fn set_face_normal(&mut self, r: &Ray, outward_normal: Vec3) {  //判断入射面方向
+    pub fn set_face_normal(&mut self, r: &Ray, outward_normal: Vec3) {
+        //判断入射面方向
 
         // ray is outside the sphere
         self.front_face = (r.drc * outward_normal) < 0.0;
 
         // ray outside <=> n = outward_normal
-        self.n = if self.front_face {outward_normal}     ////////////?????????
-                 else {-outward_normal};
+        self.n = if self.front_face {
+            outward_normal
+        }
+        ////////////?????????
+        else {
+            -outward_normal
+        };
     }
 
     pub fn set_uv(&mut self, res: (f64, f64)) {
@@ -74,7 +80,7 @@ impl Object for Sphere {
         let a = r.drc.squared_length();
         let b = oc.mul(r.drc);
         let c = oc.squared_length() - self.rd * self.rd;
-        let dis = b*b - a*c;
+        let dis = b * b - a * c;
 
         if (dis > 0.0) {
             let root = dis.sqrt();
@@ -85,7 +91,7 @@ impl Object for Sphere {
                 let temp_n: Vec3 = (temp_p - self.ct).unit();
                 let outward_normal = (temp_p - self.ct) / self.rd;
                 let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
-                
+
                 rec.set_face_normal(&r, outward_normal);
                 //let res = get_sphere_uv(&rec.p);
                 //rec.set_uv(res);
@@ -98,7 +104,7 @@ impl Object for Sphere {
                 let temp_n: Vec3 = (temp_p - self.ct).unit();
                 let outward_normal = (temp_p - self.ct) / self.rd;
                 let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
-                
+
                 rec.set_face_normal(&r, outward_normal);
                 //let res = get_sphere_uv(&rec.p);
                 //rec.set_uv(res);
@@ -118,7 +124,7 @@ pub struct Hlist {
 
 impl Hlist {
     pub fn new(dark_flag: bool) -> Hlist {
-        Hlist { 
+        Hlist {
             objects: std::vec::Vec::new(),
             dark_flag,
         }
@@ -135,7 +141,7 @@ impl Object for Hlist {
         let mut score: Option<Hitrecord> = None;
 
         for object in self.objects.iter() {
-            let rec = object.hit(r, t1_min, limit); 
+            let rec = object.hit(r, t1_min, limit);
             if let Some(h) = rec {
                 limit = h.t;
                 score = Some(h).clone();
