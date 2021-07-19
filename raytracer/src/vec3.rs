@@ -1,7 +1,7 @@
+use crate::ray::Ray;
 use rand::rngs::ThreadRng;
 use rand::Rng;
-use crate::ray::Ray;
-use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, Neg};
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vec3 {
@@ -44,7 +44,7 @@ impl Vec3 {
     }
 
     pub fn unit(&self) -> Vec3 {
-        let tmp_len:f64 = self.length();
+        let tmp_len: f64 = self.length();
 
         if tmp_len != 0.0 {
             return Vec3 {
@@ -52,9 +52,7 @@ impl Vec3 {
                 y: self.y / tmp_len,
                 z: self.z / tmp_len,
             };
-        }
-
-        else {
+        } else {
             return Vec3 {
                 x: 0.0,
                 y: 0.0,
@@ -64,10 +62,25 @@ impl Vec3 {
     }
 
     pub fn unit_panic(&self) -> bool {
-        let tmp_len:f64 = self.length();
+        let tmp_len: f64 = self.length();
         return tmp_len == 0.0;
     }
 
+    pub fn elemul(a: Vec3, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: a.x * other.x,
+            y: a.y * other.y,
+            z: a.z * other.z,
+        }
+    }
+
+    pub fn cross(a: Vec3, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: a.y * other.z - a.z * other.y,
+            y: a.z * other.x - a.x * other.z,
+            z: a.x * other.y - a.y * other.x,
+        }
+    }
 }
 
 pub fn random_in_unit_disk(rng: &mut ThreadRng) -> Vec3 {
@@ -79,11 +92,11 @@ pub fn random_in_unit_disk(rng: &mut ThreadRng) -> Vec3 {
         );
         if pos.squared_length() < 1.0 {
             break pos;
-        } 
+        }
     }
 }
 
-pub fn random_in_unit_sphere(rng: &mut ThreadRng) ->Vec3 {
+pub fn random_in_unit_sphere(rng: &mut ThreadRng) -> Vec3 {
     loop {
         let pos = Vec3::new(
             2.0 * rng.gen::<f64>() - 1.0,
@@ -96,35 +109,14 @@ pub fn random_in_unit_sphere(rng: &mut ThreadRng) ->Vec3 {
     }
 }
 
-pub fn random_unit_vector(rng: &mut ThreadRng) ->Vec3 {
+pub fn random_unit_vector(rng: &mut ThreadRng) -> Vec3 {
     let a = 2.0 * (std::f64::consts::PI) * (rng.gen::<f64>());
-    let z:f64 = 2.0 * rng.gen::<f64>() - 1.0;
-    let r = (1.0 - z*z).sqrt();
+    let z: f64 = 2.0 * rng.gen::<f64>() - 1.0;
+    let r = (1.0 - z * z).sqrt();
 
-    let pos = Vec3::new(
-        r * a.cos(),
-        r * a.sin(),
-        z,
-    );
+    let pos = Vec3::new(r * a.cos(), r * a.sin(), z);
     return pos;
 }
-
-pub fn elemul(a: Vec3, other: Vec3) -> Vec3 {
-    Vec3 {
-        x: a.x * other.x,
-        y: a.y * other.y,
-        z: a.z * other.z,
-    }
-}
-
-pub fn cross(a: Vec3, other: Vec3) -> Vec3 {
-    Vec3 {
-        x: a.y*other.z - a.z*other.y,
-        y: a.z*other.x - a.x*other.z,
-        z: a.x*other.y - a.y*other.x,
-    }
-}
-
 
 impl Add for Vec3 {
     type Output = Vec3;
@@ -268,7 +260,6 @@ impl Neg for Vec3 {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -301,7 +292,6 @@ mod tests {
         )
     }
 
-     
     #[test]
     fn test_add_assign_f64() {
         let mut x = Vec3::new(1.0, 0.0, -1.0);
@@ -316,7 +306,7 @@ mod tests {
             Vec3::new(-1.0, -4.0, -7.0)
         )
     }
-    
+
     #[test]
     fn test_sub_assign() {
         let mut x = Vec3::new(1.0, 0.0, -1.0);
@@ -335,7 +325,7 @@ mod tests {
         x -= 1.0;
         assert_eq!(x, Vec3::new(0.0, -1.0, -2.0))
     }
-    
+
     #[test]
     fn test_mul() {
         assert_eq!(Vec3::new(1.0, 0.0, -1.0) * Vec3::ones(), 0.0);
@@ -352,33 +342,16 @@ mod tests {
     fn test_mul_f64() {
         assert_eq!(Vec3::new(1.0, 0.0, -1.0) * 1.0, Vec3::new(1.0, 0.0, -1.0));
     }
-    
+
     #[test]
     fn test_div() {
         assert_eq!(Vec3::new(1.0, -2.0, 0.0) / 2.0, Vec3::new(0.5, -1.0, 0.0));
     }
 
     #[test]
-    fn test_elemul() {
-        assert_eq!(
-            Vec3::elemul(Vec3::new(1.0, 2.0, 3.0), Vec3::new(1.0, 2.0, 3.0)),
-            Vec3::new(1.0, 4.0, 9.0)
-        );
-    }
-    
-    #[test]
-    fn test_cross() {
-        assert_eq!(
-            Vec3::cross(Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 3.0, 4.0)),
-            Vec3::new(8.0 - 9.0, 6.0 - 4.0, 3.0 - 4.0)
-        );
-    }
-
-    #[test]
     fn test_neg() {
         assert_eq!(-Vec3::new(1.0, -2.0, 3.0), Vec3::new(-1.0, 2.0, -3.0));
     }
-    
 
     #[test]
     fn test_squared_length() {
@@ -392,7 +365,7 @@ mod tests {
             ((3.0 * 3.0 + 4.0 * 4.0 + 5.0 * 5.0) as f64).sqrt()
         );
     }
-    
+
     #[test]
     fn test_unit() {
         assert_eq!(Vec3::new(233.0, 0.0, 0.0).unit(), Vec3::new(1.0, 0.0, 0.0));
@@ -401,11 +374,10 @@ mod tests {
             Vec3::new(-1.0, 0.0, 0.0)
         );
     }
-    
+
     #[test]
     #[should_panic]
     fn test_unit_panic() {
         Vec3::new(0.0, 0.0, 0.0).unit();
     }
-    
 }
