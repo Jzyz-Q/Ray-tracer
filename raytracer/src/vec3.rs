@@ -1,4 +1,3 @@
-use crate::ray::Ray;
 use rand::rngs::ThreadRng;
 use rand::Rng;
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
