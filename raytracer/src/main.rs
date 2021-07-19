@@ -121,13 +121,12 @@ fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
     let rec: Option<Hitrecord> = world.hit(&*_r, 0.001, std::f64::INFINITY);
 
     if depth <= 0 {
-        let rt = Vec3::new(0.0, 0.0, 0.0);
+        let rt = Vec3::zero();
         return rt;
     }
 
     match rec {
         Some(val) => {
-            //panic!("value!!");
             let mut rng: ThreadRng = rand::thread_rng();
             //let mut target: Vec3 = val.p + val.n + random_unit_vector(&mut rng);
             //let mut tmp_r = Ray::new(val.p, target - val.p);
@@ -153,8 +152,8 @@ fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
     let unit_drc: Vec3 = _r.drc.unit();
     let _t: f64 = 0.5 * (unit_drc.y + 1.0);
     let tmp = Vec3::new(0.5, 0.7, 1.0);
-    let one = Vec3::new(1.0, 1.0, 1.0);
-    return one * (1.0 - _t) + tmp * _t;
+    let one = Vec3::ones();
+    one * (1.0 - _t) + tmp * _t
 }
 
 fn write_color(_s: &Vec3, spp: i32) {
@@ -181,29 +180,29 @@ fn clamp(_x: f64, _min: f64, _max: f64) -> f64 {
     if _x > _max {
         return _max;
     }
-    return _x;
+    _x
 }
 
 fn random_double() -> f64 {
     let rng: f64 = rand::thread_rng().gen();
-    return rng;
+    rng
 }
 
 fn random_double_limit(_min: f64, _max: f64) -> f64 {
     let mut rng = rand::thread_rng();
-    return rng.gen_range(_min.._max);
+    rng.gen_range(_min.._max)
 }
 
 fn random() -> Vec3 {
-    return Vec3::new(random_double(), random_double(), random_double());
+    Vec3::new(random_double(), random_double(), random_double())
 }
 
 fn random_limit(_min: f64, _max: f64) -> Vec3 {
-    return Vec3::new(
+    Vec3::new(
         random_double_limit(_min, _max),
         random_double_limit(_min, _max),
         random_double_limit(_min, _max),
-    );
+    )
 }
 
 fn random_scene() -> Hlist {
@@ -272,5 +271,5 @@ fn random_scene() -> Hlist {
         1.0,
         Arc::<Metal>::new(Metal::new(Vec3::new(0.7, 0.6, 0.5), 0.0)),
     )));
-    return world;
+    world
 }

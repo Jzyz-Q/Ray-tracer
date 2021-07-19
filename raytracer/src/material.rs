@@ -20,7 +20,7 @@ impl Scatter {
 
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     // 反射
-    return v - n * (2.0 * (v * n));
+    v - n * (2.0 * (v * n))
 }
 
 pub fn refract(uv: Vec3, n: Vec3, eoe: f64) -> Vec3 {
@@ -28,7 +28,7 @@ pub fn refract(uv: Vec3, n: Vec3, eoe: f64) -> Vec3 {
     let cos_t = (-uv) * n;
     let r_out_parallel: Vec3 = (uv + n * cos_t) * eoe;
     let r_out_perp: Vec3 = -n * (1.0 - r_out_parallel.squared_length()).sqrt();
-    return r_out_parallel + r_out_perp;
+    r_out_parallel + r_out_perp
 }
 
 pub trait Material: Send + Sync {
@@ -104,7 +104,7 @@ pub struct Dielectric {
 pub fn schlick(cosine: f64, ref_idx: f64) -> f64 {
     let r0_s = (1.0 - ref_idx) / (1.0 + ref_idx);
     let r0 = r0_s * r0_s;
-    return r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0);
+    r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
 }
 
 impl Dielectric {
@@ -147,6 +147,6 @@ impl Material for Dielectric {
         let refracted = refract(unit_drc, rec.n, eoe);
         let sed = Ray::new(rec.p, refracted);
         let rt = Scatter::new(att, sed);
-        return Some(rt);
+        Some(rt)
     }
 }

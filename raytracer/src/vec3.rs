@@ -27,19 +27,7 @@ impl Vec3 {
     }
 
     pub fn length(&self) -> f64 {
-        return self.squared_length().sqrt();
-    }
-
-    pub fn _x(&self) -> f64 {
-        return self.x;
-    }
-
-    pub fn _y(&self) -> f64 {
-        return self.y;
-    }
-
-    pub fn _z(&self) -> f64 {
-        return self.z;
+        self.squared_length().sqrt()
     }
 
     pub fn unit(&self) -> Vec3 {
@@ -103,7 +91,7 @@ pub fn random_unit_vector(rng: &mut ThreadRng) -> Vec3 {
     let r = (1.0 - z * z).sqrt();
 
     let pos = Vec3::new(r * a.cos(), r * a.sin(), z);
-    return pos;
+    pos
 }
 
 impl Add for Vec3 {
@@ -198,7 +186,7 @@ impl Mul for Vec3 {
     type Output = f64;
 
     fn mul(self, other: Vec3) -> f64 {
-        return self.x * other.x + self.y * other.y + self.z * other.z;
+        self.x * other.x + self.y * other.y + self.z * other.z
     }
 }
 
