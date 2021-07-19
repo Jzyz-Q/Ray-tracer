@@ -32,7 +32,7 @@ pub fn refract(uv: Vec3, n: Vec3, eoe: f64) -> Vec3 {
 }
 
 pub trait Material: Send + Sync {
-    fn scatter(&self, r_in: &Ray, rec: &Hitrecord, rng: &mut ThreadRng) -> Option<Scatter>;
+    fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter>;
     // fn emitted(&self, u: f64, v: f64, p: &Point3) -> Color;
 }
 
@@ -49,8 +49,8 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, r_in: &Ray, rec: &Hitrecord, rng: &mut ThreadRng) -> Option<Scatter> {
-        let s_drc: Vec3 = rec.n + random_unit_vector(rng);
+    fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
+        let s_drc: Vec3 = rec.n + random_unit_vector(_rng);
         let sed = Ray::new(rec.p, s_drc);
         let att = self.albedo;
         let rt = Scatter::new(att, sed);
@@ -79,11 +79,11 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn scatter(&self, r_in: &Ray, rec: &Hitrecord, rng: &mut ThreadRng) -> Option<Scatter> {
-        let red: Vec3 = reflect(r_in.drc.unit(), rec.n);
+    fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
+        let red: Vec3 = reflect(_r_in.drc.unit(), rec.n);
         let sed = Ray::new(
             rec.p,
-            red + crate::vec3::random_in_unit_sphere(rng) * self.fuzz,
+            red + crate::vec3::random_in_unit_sphere(_rng) * self.fuzz,
         );
         let att = self.albedo;
         let rt = Scatter::new(att, sed);
@@ -114,7 +114,7 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn scatter(&self, r_in: &Ray, rec: &Hitrecord, rng: &mut ThreadRng) -> Option<Scatter> {
+    fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
         let att = Vec3::new(1.0, 1.0, 1.0);
         let eoe = if rec.front_face {
             1.0 / self.ref_idx
@@ -122,7 +122,7 @@ impl Material for Dielectric {
             self.ref_idx
         };
 
-        let unit_drc: Vec3 = r_in.drc.unit();
+        let unit_drc: Vec3 = _r_in.drc.unit();
         let cos = -unit_drc * rec.n;
         let cos_theta: f64 = if cos < 1.0 { cos } else { 1.0 };
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();

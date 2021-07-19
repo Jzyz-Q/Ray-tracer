@@ -43,7 +43,7 @@ fn main() {
     let dist_to_focus: f64 = 10.0;
     let aperture = 0.1;
 
-    let mut cam = Camera::new(
+    let cam = Camera::new(
         lookfrom,
         lookat,
         vup,
@@ -53,7 +53,7 @@ fn main() {
         dist_to_focus,
     );
 
-    let mut world = random_scene();
+    let world = random_scene();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -78,8 +78,8 @@ fn main() {
         let mut _i = 0;
         while _i < image_width {
             let mut _s = 0;
-            let mut i_f = _i as f64;
-            let mut j_f = _j as f64;
+            let i_f = _i as f64;
+            let j_f = _j as f64;
             let mut color = Vec3::new(0.0, 0.0, 0.0);
 
             while _s < spp {
@@ -118,7 +118,7 @@ fn main() {
 }
 
 fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
-    let mut rec: Option<Hitrecord> = world.hit(&*_r, 0.001, std::f64::INFINITY);
+    let rec: Option<Hitrecord> = world.hit(&*_r, 0.001, std::f64::INFINITY);
 
     if depth <= 0 {
         let rt = Vec3::new(0.0, 0.0, 0.0);
@@ -185,7 +185,7 @@ fn clamp(_x: f64, _min: f64, _max: f64) -> f64 {
 }
 
 fn random_double() -> f64 {
-    let mut rng: f64 = rand::thread_rng().gen();
+    let rng: f64 = rand::thread_rng().gen();
     return rng;
 }
 
