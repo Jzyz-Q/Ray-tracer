@@ -348,21 +348,21 @@ mod tests {
         assert_eq!(Vec3::new(1.0, -2.0, 0.0) / 2.0, Vec3::new(0.5, -1.0, 0.0));
     }
 
-    #[test]
-    fn test_elemul() {
-        assert_eq!(
-            Vec3::elemul(Vec3::new(1.0, 2.0, 3.0), Vec3::new(1.0, 2.0, 3.0)),
-            Vec3::new(1.0, 4.0, 9.0)
-        );
-    }
+    // #[test]
+    // fn test_elemul() {
+    //     assert_eq!(
+    //         Vec3::elemul(Vec3::new(1.0, 2.0, 3.0), Vec3::new(1.0, 2.0, 3.0)),
+    //         Vec3::new(1.0, 4.0, 9.0)
+    //     );
+    // }
 
-    #[test]
-    fn test_cross() {
-        assert_eq!(
-            Vec3::cross(Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 3.0, 4.0)),
-            Vec3::new(8.0 - 9.0, 6.0 - 4.0, 3.0 - 4.0)
-        );
-    }
+    // #[test]
+    // fn test_cross() {
+    //     assert_eq!(
+    //         Vec3::cross(Vec3::new(1.0, 2.0, 3.0), Vec3::new(2.0, 3.0, 4.0)),
+    //         Vec3::new(8.0 - 9.0, 6.0 - 4.0, 3.0 - 4.0)
+    //     );
+    // }
 
     #[test]
     fn test_neg() {
