@@ -90,8 +90,7 @@ pub fn random_unit_vector(rng: &mut ThreadRng) -> Vec3 {
     let z: f64 = 2.0 * rng.gen::<f64>() - 1.0;
     let r = (1.0 - z * z).sqrt();
 
-    let pos = Vec3::new(r * a.cos(), r * a.sin(), z);
-    pos
+    Vec3::new(r * a.cos(), r * a.sin(), z)
 }
 
 impl Add for Vec3 {

@@ -125,8 +125,7 @@ fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
         return rt;
     }
 
-    match rec {
-        Some(val) => {
+    if let Some(val) = rec {
             let mut rng: ThreadRng = rand::thread_rng();
             //let mut target: Vec3 = val.p + val.n + random_unit_vector(&mut rng);
             //let mut tmp_r = Ray::new(val.p, target - val.p);
@@ -143,10 +142,6 @@ fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
                     return rt;
                 }
             }
-        }
-        None => {
-            //panic!("called Option on a None value!");
-        }
     }
 
     let unit_drc: Vec3 = _r.drc.unit();
