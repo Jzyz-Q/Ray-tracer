@@ -45,25 +45,14 @@ impl Vec3 {
 
     pub fn unit(&self) -> Vec3 {
         let tmp_len: f64 = self.length();
-
-        if tmp_len != 0.0 {
-            return Vec3 {
-                x: self.x / tmp_len,
-                y: self.y / tmp_len,
-                z: self.z / tmp_len,
-            };
-        } else {
-            return Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            };
+        if tmp_len == 0.0 {
+            panic!("zero");
         }
-    }
-
-    pub fn unit_panic(&self) -> bool {
-        let tmp_len: f64 = self.length();
-        return tmp_len == 0.0;
+        Vec3 {
+            x: self.x / tmp_len,
+            y: self.y / tmp_len,
+            z: self.z / tmp_len,
+        }
     }
 
     pub fn elemul(a: Vec3, other: Vec3) -> Vec3 {
