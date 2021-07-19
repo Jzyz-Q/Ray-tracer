@@ -126,22 +126,21 @@ fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
     }
 
     if let Some(val) = rec {
-            let mut rng: ThreadRng = rand::thread_rng();
-            //let mut target: Vec3 = val.p + val.n + random_unit_vector(&mut rng);
-            //let mut tmp_r = Ray::new(val.p, target - val.p);
-            //return ray_color(&tmp_r, &world, depth - 1) * 0.5;
-            let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
-            match cur {
-                Some(scattered) => {
-                    let rt =
-                        Vec3::elemul(scattered.att, ray_color(&scattered.ray, &world, depth - 1));
-                    return rt;
-                }
-                None => {
-                    let rt = Vec3::new(0.0, 0.0, 0.0);
-                    return rt;
-                }
+        let mut rng: ThreadRng = rand::thread_rng();
+        //let mut target: Vec3 = val.p + val.n + random_unit_vector(&mut rng);
+        //let mut tmp_r = Ray::new(val.p, target - val.p);
+        //return ray_color(&tmp_r, &world, depth - 1) * 0.5;
+        let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
+        match cur {
+            Some(scattered) => {
+                let rt = Vec3::elemul(scattered.att, ray_color(&scattered.ray, &world, depth - 1));
+                return rt;
             }
+            None => {
+                let rt = Vec3::new(0.0, 0.0, 0.0);
+                return rt;
+            }
+        }
     }
 
     let unit_drc: Vec3 = _r.drc.unit();
