@@ -15,7 +15,6 @@ use crate::material::Dielectric;
 use crate::material::Lambertian;
 use crate::material::Metal;
 use crate::ray::Ray;
-use crate::vec3::cross;
 use crate::vec3::random_unit_vector;
 use crate::vec3::Vec3;
 use image::ImageBuffer;
@@ -25,9 +24,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 1024;
-    let image_height = 512;
-    let spp = 100;
+    let image_width = 1200;
+    let image_height = 800;
+    let spp = 500;
     let max_depth = 50;
 
     let mut img: RgbImage = ImageBuffer::new(image_width as u32, image_height as u32);
@@ -138,7 +137,7 @@ fn ray_color(r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
             match cur {
                 Some(scattered) => {
                     let rt =
-                        vec3::elemul(scattered.att, ray_color(&scattered.ray, &world, depth - 1));
+                        Vec3::elemul(scattered.att, ray_color(&scattered.ray, &world, depth - 1));
                     return rt;
                 }
                 None => {
@@ -232,7 +231,7 @@ fn random_scene() -> Hlist {
             if len > 0.9 {
                 if choose_mat < 0.8 {
                     //disfuse
-                    let albedo = vec3::elemul(random(), random());
+                    let albedo = Vec3::elemul(random(), random());
                     world.push(Arc::<Sphere>::new(Sphere::new(
                         center,
                         0.2,

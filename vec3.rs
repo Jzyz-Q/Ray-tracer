@@ -65,6 +65,22 @@ impl Vec3 {
         let tmp_len: f64 = self.length();
         return tmp_len == 0.0;
     }
+
+    pub fn elemul(a: Vec3, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: a.x * other.x,
+            y: a.y * other.y,
+            z: a.z * other.z,
+        }
+    }
+
+    pub fn cross(a: Vec3, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: a.y * other.z - a.z * other.y,
+            y: a.z * other.x - a.x * other.z,
+            z: a.x * other.y - a.y * other.x,
+        }
+    }
 }
 
 pub fn random_in_unit_disk(rng: &mut ThreadRng) -> Vec3 {
@@ -100,22 +116,6 @@ pub fn random_unit_vector(rng: &mut ThreadRng) -> Vec3 {
 
     let pos = Vec3::new(r * a.cos(), r * a.sin(), z);
     return pos;
-}
-
-pub fn elemul(a: Vec3, other: Vec3) -> Vec3 {
-    Vec3 {
-        x: a.x * other.x,
-        y: a.y * other.y,
-        z: a.z * other.z,
-    }
-}
-
-pub fn cross(a: Vec3, other: Vec3) -> Vec3 {
-    Vec3 {
-        x: a.y * other.z - a.z * other.y,
-        y: a.z * other.x - a.x * other.z,
-        z: a.x * other.y - a.y * other.x,
-    }
 }
 
 impl Add for Vec3 {
