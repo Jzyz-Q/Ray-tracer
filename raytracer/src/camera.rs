@@ -1,7 +1,6 @@
 #![allow(warnings, unused)]
 use crate::{ray::Ray, vec3::random_in_unit_disk, vec3::Vec3};
 use rand::rngs::ThreadRng;
-use crate::cross;
 
 // 对一个像素进行多次采样
 #[derive(Clone, Copy, Debug)]
