@@ -70,6 +70,6 @@ impl Noise {
 
 impl Texture for Noise {
     fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
-        Vec3::ones() * 0.5 * (1.0 + self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin()
+        Vec3::ones() * 0.5 * (1.0 + (self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin())
     }
 }
