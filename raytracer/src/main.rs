@@ -301,7 +301,7 @@ fn tow_perlin_spheres() -> Hlist {
     let mut objects = Hlist::new(true);
 
     let pn = Perlin::new();
-    let pertext = Arc::<Noise>::new(Noise::new(pn, 1.0));
+    let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(0.0, -1000.0, 0.0), 
         1000.0,
