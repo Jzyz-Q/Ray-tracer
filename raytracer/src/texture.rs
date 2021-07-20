@@ -59,16 +59,17 @@ impl Texture for Solid {
 #[derive(Clone)]
 pub struct Noise {
     noise: Perlin,
+    scale: f64,
 }
 
 impl Noise {
-    pub fn new(noise: Perlin) -> Noise {
-        Noise { noise }
+    pub fn new(noise: Perlin, scale: f64) -> Noise {
+        Noise { noise, scale }
     }
 }
 
 impl Texture for Noise {
     fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
-        Vec3::ones() * self.noise.noise(p)
+        Vec3::ones() * 0.5 * (1.0 + self.noise.noise(&(*p * self.scale)))
     }
 }
