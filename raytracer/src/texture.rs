@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::Perlin;
 
 pub trait Texture: Sync + Send {
-    fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3;
+    fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3;
 } 
 
 #[derive(Clone)]
@@ -26,7 +26,7 @@ impl CheckerT {
 }
 
 impl Texture for CheckerT {       // 3D棋盘格
-    fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
+    fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
         let sines = (10.0 * p.x).sin() * (10.0 * p.y).sin() * (10.0 * p.z).sin();
         if sines < 0.0 {self.odd.value(u, v, p)}
         else {return self.even.value(u, v, p);}
@@ -51,7 +51,7 @@ impl Solid {
 }
 
 impl Texture for Solid {
-    fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
+    fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
         self.color
     }
 }
@@ -69,7 +69,7 @@ impl Noise {
 }
 
 impl Texture for Noise {
-    fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
-        Vec3::ones() * 0.5 * (1.0 + self.noise.noise(&(*p * self.scale)))
+    fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
+        Vec3::ones() * 0.5 * (1.0 + self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin()
     }
 }

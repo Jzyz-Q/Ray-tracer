@@ -54,7 +54,7 @@ impl Material for Lambertian {
     fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
         let s_drc: Vec3 = rec.n + random_unit_vector(_rng);
         let sed = Ray::new(rec.p, s_drc);
-        let att = self.albedo.value(rec.u, rec.v, &rec.p);
+        let att = self.albedo.value(rec.u, rec.v, rec.p);
         let rt = Scatter::new(att, sed);
         Some(rt)
     }
