@@ -28,9 +28,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 200;
-    let image_height = 100;
-    let spp = 100;
+    let image_width = 1024;
+    let image_height = 512;
+    let spp = 200;
     let max_depth = 50;
 
     let mut img: RgbImage = ImageBuffer::new(image_width as u32, image_height as u32);
