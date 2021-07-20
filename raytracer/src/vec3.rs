@@ -101,7 +101,7 @@ impl Index<usize> for Vec3 {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
-            _ => panic!("out of range"),
+            _ => panic!(),
         }
     }
 }

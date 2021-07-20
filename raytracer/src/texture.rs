@@ -1,5 +1,6 @@
 use crate::vec3::*;
 use std::sync::Arc;
+use crate::Perlin;
 
 pub trait Texture: Sync + Send {
     fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3;
@@ -52,5 +53,22 @@ impl Solid {
 impl Texture for Solid {
     fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
         self.color
+    }
+}
+
+#[derive(Clone)]
+pub struct Noise {
+    noise: Perlin,
+}
+
+impl Noise {
+    pub fn new(noise: Perlin) -> Noise {
+        Noise { noise }
+    }
+}
+
+impl Texture for Noise {
+    fn value(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
+        Vec3::ones() * self.noise.noise(p)
     }
 }

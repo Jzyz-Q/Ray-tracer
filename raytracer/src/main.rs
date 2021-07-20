@@ -6,6 +6,7 @@ mod vec3;
 mod aabb;
 mod bvh;
 mod texture;
+mod perlin;
 #[allow(clippy::float_cmp)]
 
 use crate::camera::Camera;
@@ -21,6 +22,8 @@ use crate::ray::Ray;
 use crate::vec3::Vec3;
 use crate::texture::Solid;
 use crate::texture::CheckerT;
+use crate::perlin::Perlin;
+use crate::texture::Noise;
 use image::ImageBuffer;
 use image::RgbImage;
 use indicatif::ProgressBar;
@@ -58,7 +61,7 @@ fn main() {
         dist_to_focus,
     );
 
-    let world = two_sphere();
+    let world = tow_perlin_spheres();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -290,6 +293,25 @@ fn two_sphere() -> Hlist {
         Vec3::new(0.0, 10.0, 0.0),
         10.0,
         Arc::<Lambertian>::new(Lambertian::new(checker.clone()))
+    )));
+    objects
+}
+
+fn tow_perlin_spheres() -> Hlist {
+    let mut objects = Hlist::new(true);
+
+    let pn = Perlin::new();
+    let pertext = Arc::<Noise>::new(Noise::new(pn));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, -1000.0, 0.0), 
+        1000.0,
+        Arc::<Lambertian>::new(Lambertian::new(pertext.clone()))
+    )));
+
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 2.0, 0.0), 
+        2.0,
+        Arc::<Lambertian>::new(Lambertian::new(pertext.clone()))
     )));
     objects
 }
