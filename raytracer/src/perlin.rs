@@ -58,6 +58,21 @@ impl Perlin {
         interp(c, _u, _v, _w)
         //self.ranfloat[self.perm_x[_i] ^ self.perm_y[_j] ^ self.perm_z[_k]]
     }
+
+    pub fn turb(&self, p: &Vec3, depth: i32) -> f64 {
+        //depth == 7
+        let mut accum:f64 = 0.0;
+        let mut temp_p: Vec3 = *p;
+        let mut weight: f64 = 1.0;
+    
+        for i in 0..depth {
+            accum += weight * self.noise(&temp_p);
+            weight *= 0.5;
+            temp_p *= 2.0;
+        }
+    
+        accum.abs()
+    }
 }
 
 pub fn perlin_generate_perm() -> Vec<usize> {
@@ -99,3 +114,4 @@ pub fn interp(mut c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
     }
     accum
 }
+
