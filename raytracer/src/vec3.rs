@@ -1,5 +1,6 @@
 use rand::rngs::ThreadRng;
 use rand::Rng;
+use std::ops::Index;
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -91,6 +92,18 @@ pub fn random_unit_vector(rng: &mut ThreadRng) -> Vec3 {
     let r = (1.0 - z * z).sqrt();
 
     Vec3::new(r * a.cos(), r * a.sin(), z)
+}
+
+impl Index<usize> for Vec3 {
+    type Output = f64;
+    fn index(&self, idx: usize) -> &f64 {
+        match idx {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("out of range"),
+        }
+    }
 }
 
 impl Add for Vec3 {

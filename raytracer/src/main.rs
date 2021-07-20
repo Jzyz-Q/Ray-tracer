@@ -2,8 +2,11 @@ mod camera;
 mod hittable;
 mod material;
 mod ray;
-#[allow(clippy::float_cmp)]
 mod vec3;
+mod aabb;
+mod bvh;
+mod texture;
+#[allow(clippy::float_cmp)]
 
 use crate::camera::Camera;
 use crate::hittable::Arc;
@@ -16,6 +19,8 @@ use crate::material::Lambertian;
 use crate::material::Metal;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
+use crate::texture::Solid;
+use crate::texture::CheckerT;
 use image::ImageBuffer;
 use image::RgbImage;
 use indicatif::ProgressBar;
@@ -23,9 +28,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 1200;
-    let image_height = 800;
-    let spp = 500;
+    let image_width = 200;
+    let image_height = 100;
+    let spp = 100;
     let max_depth = 50;
 
     let mut img: RgbImage = ImageBuffer::new(image_width as u32, image_height as u32);
@@ -41,7 +46,7 @@ fn main() {
     let lookat = Vec3::new(0.0, 0.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus: f64 = 10.0;
-    let aperture = 0.1;
+    let aperture = 0.0;
 
     let cam = Camera::new(
         lookfrom,
@@ -53,7 +58,7 @@ fn main() {
         dist_to_focus,
     );
 
-    let world = random_scene();
+    let world = two_sphere();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -199,7 +204,7 @@ fn random_limit(_min: f64, _max: f64) -> Vec3 {
     )
 }
 
-fn random_scene() -> Hlist {
+/* fn random_scene() -> Hlist {
     let mut world = Hlist::new(true);
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
@@ -266,4 +271,25 @@ fn random_scene() -> Hlist {
         Arc::<Metal>::new(Metal::new(Vec3::new(0.7, 0.6, 0.5), 0.0)),
     )));
     world
+} */
+
+fn two_sphere() -> Hlist {
+    let mut objects = Hlist::new(true);
+
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.2, 0.3, 0.1)));
+    let s2 = Arc::<Solid>::new(Solid::new(Vec3::new(0.9, 0.9, 0.9)));
+    let checker = Arc::<CheckerT>::new(CheckerT::new1(s1, s2));
+
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, -10.0, 0.0),
+        10.0,
+        Arc::<Lambertian>::new(Lambertian::new(checker.clone()))
+    )));
+
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 10.0, 0.0),
+        10.0,
+        Arc::<Lambertian>::new(Lambertian::new(checker.clone()))
+    )));
+    objects
 }

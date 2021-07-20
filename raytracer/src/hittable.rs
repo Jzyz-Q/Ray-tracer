@@ -1,12 +1,13 @@
 #![allow(warnings, unused)]
 
-use crate::{material::Material, ray::Ray, vec3::Vec3};
+use crate::{material::Material, ray::Ray, vec3::Vec3, aabb::AABB};
 use std::ops::Mul;
 pub use std::sync::Arc;
+use crate::aabb::surrounding_box;
 
 pub trait Object: Send + Sync {
     fn hit(&self, ray: &Ray, t1_min: f64, t1_max: f64) -> Option<Hitrecord>;
-    //fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB>;
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB>;
     //fn get_background(&self, t: f64) -> Color;
 }
 
@@ -114,6 +115,14 @@ impl Object for Sphere {
 
         return None;
     }
+
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<AABB> {
+        let output_box = AABB::new(
+            &(self.ct - Vec3::ones() * self.rd),
+            &(self.ct + Vec3::ones() * self.rd),
+        );
+        Some(output_box)
+    }
 }
 
 #[derive(Clone)]
@@ -148,5 +157,32 @@ impl Object for Hlist {
             }
         }
         return score;
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
+        if self.objects.is_empty() {
+            return None;
+        }
+
+        let mut output_box = AABB::new(&Vec3::zero(), &Vec3::zero());
+        let mut first_box: bool = true;
+        
+        for object in self.objects.iter() {
+            let rec = object.bounding_box(t0, t1);
+            match rec {
+                Some(val) => {
+                    output_box = if first_box {
+                        val
+                    } else {
+                        surrounding_box(output_box, val)
+                    };
+                    first_box = false;
+                }
+                None => {
+                    return None;
+                }
+            }
+        }
+        Some(output_box)
     }
 }

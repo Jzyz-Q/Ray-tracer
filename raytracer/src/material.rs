@@ -5,6 +5,8 @@ use crate::{
 };
 use rand::rngs::ThreadRng;
 use rand::Rng;
+use crate::texture::Texture;
+use std::sync::Arc;
 
 #[derive(Copy, Clone)]
 pub struct Scatter {
@@ -36,14 +38,14 @@ pub trait Material: Send + Sync {
     // fn emitted(&self, u: f64, v: f64, p: &Point3) -> Color;
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Lambertian {
     // 漫反射材质
-    pub albedo: Vec3,
+    pub albedo: Arc<dyn Texture>,
 }
 
 impl Lambertian {
-    pub fn new(albedo: Vec3) -> Lambertian {
+    pub fn new(albedo: Arc<dyn Texture>) -> Lambertian {
         Lambertian { albedo }
     }
 }
@@ -52,7 +54,7 @@ impl Material for Lambertian {
     fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
         let s_drc: Vec3 = rec.n + random_unit_vector(_rng);
         let sed = Ray::new(rec.p, s_drc);
-        let att = self.albedo;
+        let att = self.albedo.value(rec.u, rec.v, &rec.p);
         let rt = Scatter::new(att, sed);
         Some(rt)
     }
