@@ -29,6 +29,9 @@ use crate::material::Diffuse;
 use crate::bvh::Xyrect;
 use crate::bvh::Yzrect;
 use crate::bvh::Xzrect;
+use crate::bvh::Boxes;
+use crate::bvh::RotateY;
+use crate::bvh::Translate;
 use std::path::Path;
 use image::ImageBuffer;
 use image::RgbImage;
@@ -37,8 +40,8 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 600;
-    let image_height = 600;
+    let image_width = 100;
+    let image_height = 100;
     let spp = 500;
     let max_depth = 50;
     let background = Vec3::zero();
@@ -386,6 +389,16 @@ fn cornell_box() -> Hlist {
     let white = Arc::<Lambertian>::new(Lambertian::new(vw));
     let green = Arc::<Lambertian>::new(Lambertian::new(vg));
     let light = Arc::<Diffuse>::new(Diffuse::new(s1));
+
+    let box1 = Arc::<Boxes>::new(Boxes::new(&Vec3::new(0.0, 0.0, 0.0), &Vec3::new(165.0, 330.0, 165.0), white.clone()));
+    let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 15.0));
+    let box1 = Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(265.0, 0.0, 265.0)));
+    objects.push(box1);
+
+    let box2 = Arc::<Boxes>::new(Boxes::new(&Vec3::new(0.0, 0.0, 0.0), &Vec3::new(165.0, 165.0, 165.0), white.clone()));
+    let box2 = Arc::<RotateY>::new(RotateY::new(box2.clone(), -18.0));
+    let box2 = Arc::<Translate>::new(Translate::new(box2.clone(), &Vec3::new(130.0, 0.0, 65.0)));
+    objects.push(box2);
 
     objects.push(Arc::<Yzrect>::new(Yzrect::new(
         0.0,

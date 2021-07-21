@@ -3,6 +3,7 @@
 use crate::{material::Material, ray::Ray, vec3::Vec3, aabb::AABB};
 use std::ops::Mul;
 pub use std::sync::Arc;
+use core::f64::consts::PI;
 use crate::aabb::surrounding_box;
 
 pub trait Object: Send + Sync {
@@ -364,5 +365,262 @@ impl Object for Yzrect {
             &Vec3::new(self.k - 0.0001, self.y0, self.z0),
             &Vec3::new(self.k + 0.0001, self.y1, self.z1),
         ))
+    }
+}
+
+#[derive(Clone)]
+pub struct Boxes {
+    pub box_min: Vec3,
+    pub box_max: Vec3,
+    pub sides: (
+        Xyrect,
+        Xyrect,
+        Xzrect,
+        Xzrect,
+        Yzrect,
+        Yzrect,
+    ),
+}
+
+impl Boxes {
+    pub fn new(p0: &Vec3, p1: &Vec3, mat_ptr: Arc<dyn Material>) -> Boxes {
+        Boxes {
+            box_min: *p0,
+            box_max: *p1,
+            sides: (
+                Xyrect {
+                    x0: p0.x,
+                    x1: p1.x,
+                    y0: p0.y,
+                    y1: p1.y,
+                    k: p1.z,
+                    mat_ptr: mat_ptr.clone()
+                },
+                Xyrect {
+                    x0: p0.x,
+                    x1: p1.x,
+                    y0: p0.y,
+                    y1: p1.y,
+                    k: p0.z,
+                    mat_ptr: mat_ptr.clone()
+                },
+                Xzrect {
+                    x0: p0.x,
+                    x1: p1.x,
+                    z0: p0.z,
+                    z1: p1.z,
+                    k: p1.y,
+                    mat_ptr: mat_ptr.clone()
+                },
+                Xzrect {
+                    x0: p0.x,
+                    x1: p1.x,
+                    z0: p0.z,
+                    z1: p1.z,
+                    k: p0.y,
+                    mat_ptr: mat_ptr.clone()
+                },
+                Yzrect {
+                    y0: p0.y,
+                    y1: p1.y,
+                    z0: p0.z,
+                    z1: p1.z,
+                    k: p0.x,
+                    mat_ptr: mat_ptr.clone()
+                },
+                Yzrect {
+                    y0: p0.y,
+                    y1: p1.y,
+                    z0: p0.z,
+                    z1: p1.z,
+                    k: p1.x,
+                    mat_ptr: mat_ptr.clone()
+                },
+            ),
+        }
+    }
+}
+
+impl Object for Boxes {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
+        let mut result: Option<Hitrecord> = None;
+        let mut closest = t_max;
+        if let Some(rec) = self.sides.0.hit(ray, t_min, closest) {
+            closest = rec.t;
+            result = Some(rec);
+        }
+        if let Some(rec) = self.sides.1.hit(ray, t_min, closest) {
+            closest = rec.t;
+            result = Some(rec);
+        }
+        if let Some(rec) = self.sides.2.hit(ray, t_min, closest) {
+            closest = rec.t;
+            result = Some(rec);
+        }
+        if let Some(rec) = self.sides.3.hit(ray, t_min, closest) {
+            closest = rec.t;
+            result = Some(rec);
+        }
+        if let Some(rec) = self.sides.4.hit(ray, t_min, closest) {
+            closest = rec.t;
+            result = Some(rec);
+        }
+        if let Some(rec) = self.sides.5.hit(ray, t_min, closest) {
+            result = Some(rec);
+        }
+        result
+    }
+
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<AABB> {
+        Some(AABB::new(&self.box_min, &self.box_max))
+    }
+}
+
+#[derive(Clone)]
+pub struct Translate {
+    pub ptr: Arc<dyn Object>,
+    pub offset: Vec3,
+}
+
+impl Translate {
+    pub fn new(p: Arc<dyn Object>, displacement: &Vec3) -> Self {
+        Self {
+            ptr: p,
+            offset: *displacement,
+        }
+    }
+}
+
+impl Object for Translate {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
+        let moved_r = Ray::new(ray.org - self.offset, ray.drc);
+        if let Some(mut rec) = self.ptr.hit(&moved_r, t_min, t_max) {
+            let flag = (moved_r.drc * rec.n) < 0.0;
+            if !flag {
+                rec.n = -rec.n;
+            }
+            return Some(Hitrecord {
+                p: rec.p + self.offset,
+                n: rec.n,
+                front_face: flag,
+                mat_ptr: rec.mat_ptr,
+                u: rec.u,
+                t: rec.t,
+                v: rec.v,
+            });
+        }
+        None
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
+        if let Some(output) = self.ptr.bounding_box(t0, t1) {
+            return Some(AABB::new(
+                &(output._min + self.offset),
+                &(output._max + self.offset),
+            ));
+        }
+        None
+    }
+}
+
+#[derive(Clone)]
+pub struct RotateY {
+    pub ptr: Arc<dyn Object>,
+    pub sin_theta: f64,
+    pub cos_theta: f64,
+    pub has_box: bool,
+    pub bbox: AABB,
+}
+
+impl RotateY {
+    pub fn new(ptr: Arc<dyn Object>, angle: f64) -> Self {
+        let radians = angle / 180.0 * PI;
+        let sin_theta = radians.sin();
+        let cos_theta = radians.cos();
+
+        let mut _min = Vec3::new(std::f64::INFINITY, std::f64::INFINITY, std::f64::INFINITY);
+        let mut _max = Vec3::new(-std::f64::INFINITY, -std::f64::INFINITY, -std::f64::INFINITY);
+
+        if let Some(bbox) = ptr.bounding_box(0.0, 1.0) {
+            let has_box = true;
+            for i in 0..2 {
+                for j in 0..2 {
+                    for k in 0..2 {
+                        let x = i as f64 * bbox._max.x + (1 - i) as f64 * bbox._min.x;
+                        let y = j as f64 * bbox._max.y + (1 - j) as f64 * bbox._min.y;
+                        let z = k as f64 * bbox._max.z + (1 - k) as f64 * bbox._min.z;
+
+                        let newx = cos_theta * x + sin_theta * z;
+                        let newz = -sin_theta * x + cos_theta * z;
+
+                        _min.x = _min.x.min(newx);
+                        _min.y = _min.y.min(y);
+                        _min.z = _min.z.min(newz);
+                        _max.x = _max.x.max(newx);
+                        _max.y = _max.y.max(y);
+                        _max.z = _max.z.max(newz);
+                    }
+                }
+            }
+            let bbox = AABB::new(&_min, &_max);
+            Self {
+                ptr,
+                sin_theta,
+                cos_theta,
+                bbox,
+                has_box,
+            }
+        } else {
+            panic!();
+        }
+    }
+}
+
+impl Object for RotateY {
+    
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
+        let mut org = ray.org;
+        let mut drc = ray.drc;
+
+        org.x = self.cos_theta * ray.org.x - self.sin_theta * ray.org.z;
+        org.z = self.sin_theta * ray.org.x + self.cos_theta * ray.org.z;
+
+        drc.x = self.cos_theta * ray.drc.x - self.sin_theta * ray.drc.z;
+        drc.z = self.sin_theta * ray.drc.x + self.cos_theta * ray.drc.z;
+
+        let rotated_r = Ray::new(org, drc);
+        if let Some(rec) = self.ptr.hit(&rotated_r, t_min, t_max) {
+            let mut p = rec.p;
+            let mut n = rec.n;
+
+            p.x = self.cos_theta * rec.p.x + self.sin_theta * rec.p.z;
+            p.z = -self.sin_theta * rec.p.x + self.cos_theta * rec.p.z;
+
+            n.x = self.cos_theta * rec.n.x + self.sin_theta * rec.n.z;
+            n.z = -self.sin_theta * rec.n.x + self.cos_theta * rec.n.z;
+
+            let flag = (rotated_r.drc * rec.n) < 0.0;
+            if !flag {
+                n = -n;
+            }
+            return Some(Hitrecord {
+                p,
+                n,
+                front_face: flag,
+                mat_ptr: rec.mat_ptr,
+                u: rec.u,
+                t: rec.t,
+                v: rec.v,
+            });
+        }
+        None
+    }
+
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<AABB> {
+        if self.has_box {
+            Some(self.bbox)
+        } else {
+            None
+        }
     }
 }
