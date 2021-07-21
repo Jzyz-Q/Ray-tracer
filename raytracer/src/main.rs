@@ -24,6 +24,8 @@ use crate::texture::Solid;
 use crate::texture::CheckerT;
 use crate::perlin::Perlin;
 use crate::texture::Noise;
+use crate::texture::ImageTexture;
+use std::path::Path;
 use image::ImageBuffer;
 use image::RgbImage;
 use indicatif::ProgressBar;
@@ -31,9 +33,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 1024;
-    let image_height = 512;
-    let spp = 200;
+    let image_width = 200;
+    let image_height = 200;
+    let spp = 100;
     let max_depth = 50;
 
     let mut img: RgbImage = ImageBuffer::new(image_width as u32, image_height as u32);
@@ -61,7 +63,7 @@ fn main() {
         dist_to_focus,
     );
 
-    let world = tow_perlin_spheres();
+    let world = earth();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -312,6 +314,19 @@ fn tow_perlin_spheres() -> Hlist {
         Vec3::new(0.0, 2.0, 0.0), 
         2.0,
         Arc::<Lambertian>::new(Lambertian::new(pertext.clone()))
+    )));
+    objects
+}
+
+fn earth() -> Hlist {
+    let path = Path::new("input.jpg");
+    let mut objects = Hlist::new(true);
+
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 0.0, 0.0), 
+        2.0,
+        Arc::<Lambertian>::new(Lambertian::new(imgtext.clone()))
     )));
     objects
 }

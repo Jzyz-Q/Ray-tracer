@@ -1,6 +1,10 @@
 use crate::vec3::*;
-use std::sync::Arc;
 use crate::Perlin;
+use crate::clamp;
+use std::sync::Arc;
+use std::path::Path;
+use image::ImageDecoder;
+use image::GenericImageView;
 
 pub trait Texture: Sync + Send {
     fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3;
@@ -73,3 +77,54 @@ impl Texture for Noise {
         Vec3::ones() * 0.5 * (1.0 + (self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin())
     }
 }
+#[derive(Clone)]
+pub struct ImageTexture {
+    pub img: image::DynamicImage,
+    pub nx: u32,
+    pub ny: u32,
+}
+
+impl ImageTexture {
+    pub fn new(path: &Path) -> Self {
+        let img = image::open(path).unwrap();
+        Self {
+            img: img.clone(),
+            nx: img.dimensions().0,
+            ny: img.dimensions().1,
+        }
+    }
+}
+
+impl Texture for ImageTexture {
+    fn value(&self, u: f64, v: f64, _p: Vec3) -> Vec3{
+        let u = clamp(u, 0.0, 1.0);
+        let v = 1.0 - clamp(v, 0.0, 1.0);
+        let mut i = (u * self.nx as f64) as u32;
+        let mut j = (v * self.ny as f64 - 0.001) as u32;
+        // if i < 0 {
+        //     i = 0;
+        // }
+        // if j < 0 {
+        //     j = 0;
+        // }
+        if i >= self.nx {
+            i = self.nx - 1;
+        }
+        if j >= self.ny {
+            j = self.ny - 1;
+        }
+        let sc: f64 = 1.0 / 255.0;
+        let pixel = self.img.get_pixel(i as u32, j as u32);
+        Vec3::new(
+            pixel[0] as f64 * sc,
+            pixel[1] as f64 * sc,
+            pixel[2] as f64 * sc,
+        )
+    }
+}
+
+
+
+
+
+

@@ -94,8 +94,8 @@ impl Object for Sphere {
                 let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
 
                 rec.set_face_normal(&r, outward_normal);
-                //let res = get_sphere_uv(&rec.p);
-                //rec.set_uv(res);
+                let res = get_sphere_uv(&((rec.p - self.ct)/self.rd));
+                rec.set_uv(res);
                 return Some(rec);
             }
 
@@ -107,8 +107,8 @@ impl Object for Sphere {
                 let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
 
                 rec.set_face_normal(&r, outward_normal);
-                //let res = get_sphere_uv(&rec.p);
-                //rec.set_uv(res);
+                let res = get_sphere_uv(&rec.p);
+                rec.set_uv(res);
                 return Some(rec);
             }
         }
@@ -123,6 +123,15 @@ impl Object for Sphere {
         );
         Some(output_box)
     }
+}
+
+pub fn get_sphere_uv(p: &Vec3) -> (f64, f64) {
+    let pi = std::f64::consts::PI;
+    let phi = p.z.atan2(p.x);
+    let theta = p.y.asin();
+    let u = 1.0 - (phi + pi) / (2.0 * pi);
+    let v = (theta + pi / 2.0) / pi;
+    (u, v)
 }
 
 #[derive(Clone)]
