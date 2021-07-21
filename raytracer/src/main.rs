@@ -39,7 +39,7 @@ use rand::Rng;
 fn main() {
     let image_width = 300;
     let image_height = 300;
-    let spp = 100;
+    let spp = 500;
     let max_depth = 50;
     let background = Vec3::zero();
 
