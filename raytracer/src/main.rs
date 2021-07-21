@@ -27,6 +27,8 @@ use crate::texture::Noise;
 use crate::texture::ImageTexture;
 use crate::material::Diffuse;
 use crate::bvh::Xyrect;
+use crate::bvh::Yzrect;
+use crate::bvh::Xzrect;
 use std::path::Path;
 use image::ImageBuffer;
 use image::RgbImage;
@@ -35,8 +37,8 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 400;
-    let image_height = 200;
+    let image_width = 300;
+    let image_height = 300;
     let spp = 100;
     let max_depth = 50;
     let background = Vec3::zero();
@@ -50,8 +52,8 @@ fn main() {
     let h_f = image_height as f64;
 
     let aspect_ratio = w_f / h_f;
-    let lookfrom = Vec3::new(13.0, 2.0, 3.0);
-    let lookat = Vec3::new(0.0, 0.0, 0.0);
+    let lookfrom = Vec3::new(278.0, 278.0, -800.0);
+    let lookat = Vec3::new(278.0, 278.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus: f64 = 10.0;
     let aperture = 0.0;
@@ -60,13 +62,13 @@ fn main() {
         lookfrom,
         lookat,
         vup,
-        20.0,
+        40.0,
         aspect_ratio,
         aperture,
         dist_to_focus,
     );
 
-    let world = simple_light();
+    let world = cornell_box();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -368,6 +370,75 @@ fn simple_light() -> Hlist {
         3.0,
         -2.0,
         difflight.clone()
+    )));
+    objects
+}
+
+fn cornell_box() -> Hlist {
+    let mut objects = Hlist::new(true);
+
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(15.0, 15.0, 15.0)));
+    let vr = Arc::<Solid>::new(Solid::new(Vec3::new(0.65, 0.05, 0.05)));
+    let vw = Arc::<Solid>::new(Solid::new(Vec3::new(0.73, 0.73, 0.73)));
+    let vg = Arc::<Solid>::new(Solid::new(Vec3::new(0.12, 0.45, 0.15)));
+
+    let red = Arc::<Lambertian>::new(Lambertian::new(vr));
+    let white = Arc::<Lambertian>::new(Lambertian::new(vw));
+    let green = Arc::<Lambertian>::new(Lambertian::new(vg));
+    let light = Arc::<Diffuse>::new(Diffuse::new(s1));
+
+    objects.push(Arc::<Yzrect>::new(Yzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        green.clone()
+    )));
+
+    objects.push(Arc::<Yzrect>::new(Yzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        red.clone()
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        213.0,
+        343.0,
+        227.0,
+        332.0,
+        554.0,
+        light.clone()
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        white.clone()
+    )));
+    
+    objects.push(Arc::<Xyrect>::new(Xyrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        white.clone()
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        white.clone()
     )));
     objects
 }

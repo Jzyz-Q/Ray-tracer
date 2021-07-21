@@ -252,3 +252,117 @@ impl Object for Xyrect {
         ))
     }
 }
+
+#[derive(Clone)]
+pub struct Xzrect {
+    pub mat_ptr: Arc<dyn Material>,
+    pub x0: f64,
+    pub x1: f64,
+    pub z0: f64,
+    pub z1: f64,
+    pub k: f64, 
+}
+
+impl Xzrect {
+    pub fn new(x0: f64, x1: f64, z0: f64, z1: f64, k: f64, mat_ptr: Arc<dyn Material>) -> Xzrect {
+        Xzrect {
+            mat_ptr,
+            x0,
+            x1,
+            z0,
+            z1,
+            k,
+        }
+    }
+}
+
+impl Object for Xzrect {
+    fn hit(&self, ray: &Ray, t1_min: f64, t1_max: f64) -> Option<Hitrecord> {
+        let t = (self.k - ray.org.y) / ray.drc.y;
+        if t < t1_min || t > t1_max {
+            return None;
+        }
+        let x = ray.org.x + t * ray.drc.x;
+        let z = ray.org.z + t * ray.drc.z;
+        if x < self.x0 || x > self.x1 || z < self.z0 || z > self.z1 {
+            return None;
+        }
+        let mut outward_normal = Vec3::new(0.0, 1.0, 0.0);
+        let flag = (ray.drc * outward_normal) < 0.0;
+        if !flag {
+            outward_normal = -outward_normal;
+        }
+        Some(Hitrecord {
+            u: (x - self.x0) / (self.x1 - self.x0),
+            v: (z - self.z0) / (self.z1 - self.z0),
+            t,
+            n: outward_normal,
+            front_face: flag,
+            mat_ptr: self.mat_ptr.clone(),
+            p: ray.at(t),
+        })
+    }
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
+        Some(AABB::new(
+            &Vec3::new(self.x0, self.k - 0.0001, self.z0),
+            &Vec3::new(self.x1, self.k + 0.0001, self.z1),
+        ))
+    }
+}
+
+#[derive(Clone)]
+pub struct Yzrect {
+    pub mat_ptr: Arc<dyn Material>,
+    pub y0: f64,
+    pub y1: f64,
+    pub z0: f64,
+    pub z1: f64,
+    pub k: f64, 
+}
+
+impl Yzrect {
+    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, mat_ptr: Arc<dyn Material>) -> Yzrect {
+        Yzrect {
+            mat_ptr,
+            y0,
+            y1,
+            z0,
+            z1,
+            k,
+        }
+    }
+}
+
+impl Object for Yzrect {
+    fn hit(&self, ray: &Ray, t1_min: f64, t1_max: f64) -> Option<Hitrecord> {
+        let t = (self.k - ray.org.x) / ray.drc.x;
+        if t < t1_min || t > t1_max {
+            return None;
+        }
+        let y = ray.org.y + t * ray.drc.y;
+        let z = ray.org.z + t * ray.drc.z;
+        if y < self.y0 || y > self.y1 || z < self.z0 || z > self.z1 {
+            return None;
+        }
+        let mut outward_normal = Vec3::new(1.0, 0.0, 0.0);
+        let flag = (ray.drc * outward_normal) < 0.0;
+        if !flag {
+            outward_normal = -outward_normal;
+        }
+        Some(Hitrecord {
+            u: (y - self.y0) / (self.y1 - self.y0),
+            v: (z - self.z0) / (self.z1 - self.z0),
+            t,
+            n: outward_normal,
+            front_face: flag,
+            mat_ptr: self.mat_ptr.clone(),
+            p: ray.at(t),
+        })
+    }
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
+        Some(AABB::new(
+            &Vec3::new(self.k - 0.0001, self.y0, self.z0),
+            &Vec3::new(self.k + 0.0001, self.y1, self.z1),
+        ))
+    }
+}
