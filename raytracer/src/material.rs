@@ -35,7 +35,7 @@ pub fn refract(uv: Vec3, n: Vec3, eoe: f64) -> Vec3 {
 
 pub trait Material: Send + Sync {
     fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter>;
-    // fn emitted(&self, u: f64, v: f64, p: &Point3) -> Color;
+    fn emitted(&self, u: f64, v: f64, p: &Vec3) -> Vec3;
 }
 
 #[derive(Clone)]
@@ -57,6 +57,14 @@ impl Material for Lambertian {
         let att = self.albedo.value(rec.u, rec.v, rec.p);
         let rt = Scatter::new(att, sed);
         Some(rt)
+    }
+
+    fn emitted(&self, _u: f64, _v: f64, _p: &Vec3) -> Vec3 {
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
     }
 }
 
@@ -94,6 +102,14 @@ impl Material for Metal {
             Some(rt)
         } else {
             None
+        }
+    }
+
+    fn emitted(&self, _u: f64, _v: f64, _p: &Vec3) -> Vec3 {
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
         }
     }
 }
@@ -150,5 +166,34 @@ impl Material for Dielectric {
         let sed = Ray::new(rec.p, refracted);
         let rt = Scatter::new(att, sed);
         Some(rt)
+    }
+
+    fn emitted(&self, _u: f64, _v: f64, _p: &Vec3) -> Vec3 {
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct Diffuse {
+    pub emit: Arc<dyn Texture>,
+}
+
+impl Diffuse {
+    pub fn new(emit: Arc<dyn Texture>) -> Diffuse {
+        Diffuse { emit }
+    }
+}
+
+impl Material for Diffuse {
+    fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
+        None
+    }
+
+    fn emitted(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
+        self.emit.value(u, v, *p)
     }
 }

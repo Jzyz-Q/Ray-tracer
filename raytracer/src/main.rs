@@ -25,6 +25,8 @@ use crate::texture::CheckerT;
 use crate::perlin::Perlin;
 use crate::texture::Noise;
 use crate::texture::ImageTexture;
+use crate::material::Diffuse;
+use crate::bvh::Xyrect;
 use std::path::Path;
 use image::ImageBuffer;
 use image::RgbImage;
@@ -33,10 +35,11 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 200;
+    let image_width = 400;
     let image_height = 200;
     let spp = 100;
     let max_depth = 50;
+    let background = Vec3::zero();
 
     let mut img: RgbImage = ImageBuffer::new(image_width as u32, image_height as u32);
     let bar = ProgressBar::new(image_width as u64);
@@ -63,7 +66,7 @@ fn main() {
         dist_to_focus,
     );
 
-    let world = earth();
+    let world = simple_light();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -98,7 +101,7 @@ fn main() {
                 let mut rng: ThreadRng = rand::thread_rng();
                 let mut _r = cam.make_ray(&mut rng, _u, _v);
                 //let r = Ray::new(cam.sor, cam.cor + cam.hor*u + cam.ver*v - cam.sor);
-                color += ray_color(&_r, &world, max_depth);
+                color += ray_color(&_r, &background, &world, max_depth);
                 _s += 1;
             }
             let pixel = img.get_pixel_mut(_i as u32, _j as u32);
@@ -127,7 +130,7 @@ fn main() {
     bar.finish();
 }
 
-fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
+fn ray_color(_r: &Ray, background: &Vec3, world: &Hlist, depth: i32) -> Vec3 {
     let rec: Option<Hitrecord> = world.hit(&*_r, 0.001, std::f64::INFINITY);
 
     if depth <= 0 {
@@ -135,21 +138,23 @@ fn ray_color(_r: &Ray, world: &Hlist, depth: i32) -> Vec3 {
         return rt;
     }
 
-    if let Some(val) = rec {
-        let mut rng: ThreadRng = rand::thread_rng();
-        //let mut target: Vec3 = val.p + val.n + random_unit_vector(&mut rng);
-        //let mut tmp_r = Ray::new(val.p, target - val.p);
-        //return ray_color(&tmp_r, &world, depth - 1) * 0.5;
-        let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
-        match cur {
-            Some(scattered) => {
-                let rt = Vec3::elemul(scattered.att, ray_color(&scattered.ray, &world, depth - 1));
-                return rt;
+    match rec {
+        Some(val) => {
+            let emitted = val.mat_ptr.emitted(val.u, val.v, &val.p);
+            let mut rng: ThreadRng = rand::thread_rng();
+            let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
+            match cur {
+                Some(scattered) => {
+                    let rt = Vec3::elemul(scattered.att, ray_color(&scattered.ray, &background, &world, depth - 1)) + emitted;
+                    return rt;
+                }
+                None => {
+                    return emitted;
+                }
             }
-            None => {
-                let rt = Vec3::new(0.0, 0.0, 0.0);
-                return rt;
-            }
+        }
+        None => {
+            return *background;
         }
     }
 
@@ -327,6 +332,42 @@ fn earth() -> Hlist {
         Vec3::new(0.0, 0.0, 0.0), 
         2.0,
         Arc::<Lambertian>::new(Lambertian::new(imgtext.clone()))
+    )));
+    objects
+}
+
+fn simple_light() -> Hlist {
+    let mut objects = Hlist::new(true);
+
+    let pn = Perlin::new();
+    let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, -1000.0, 0.0), 
+        1000.0,
+        Arc::<Lambertian>::new(Lambertian::new(pertext.clone()))
+    )));
+
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 2.0, 0.0), 
+        2.0,
+        Arc::<Lambertian>::new(Lambertian::new(pertext.clone()))
+    )));
+
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(4.0, 4.0, 4.0)));
+    let difflight = Arc::<Diffuse>::new(Diffuse::new(s1));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 7.0, 0.0), 
+        2.0,
+        difflight.clone()
+    )));
+
+    objects.push(Arc::<Xyrect>::new(Xyrect::new(
+        3.0,
+        5.0,
+        1.0,
+        3.0,
+        -2.0,
+        difflight.clone()
     )));
     objects
 }

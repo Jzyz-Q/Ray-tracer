@@ -195,3 +195,60 @@ impl Object for Hlist {
         Some(output_box)
     }
 }
+
+#[derive(Clone)]
+pub struct Xyrect {
+    pub mat_ptr: Arc<dyn Material>,
+    pub x0: f64,
+    pub x1: f64,
+    pub y0: f64,
+    pub y1: f64,
+    pub k: f64, 
+}
+
+impl Xyrect {
+    pub fn new(x0: f64, x1: f64, y0: f64, y1: f64, k: f64, mat_ptr: Arc<dyn Material>) -> Xyrect {
+        Xyrect {
+            mat_ptr,
+            x0,
+            x1,
+            y0,
+            y1,
+            k,
+        }
+    }
+}
+
+impl Object for Xyrect {
+    fn hit(&self, ray: &Ray, t1_min: f64, t1_max: f64) -> Option<Hitrecord> {
+        let t = (self.k - ray.org.z) / ray.drc.z;
+        if t < t1_min || t > t1_max {
+            return None;
+        }
+        let x = ray.org.x + t * ray.drc.x;
+        let y = ray.org.y + t * ray.drc.y;
+        if x < self.x0 || x > self.x1 || y < self.y0 || y > self.y1 {
+            return None;
+        }
+        let mut outward_normal = Vec3::new(0.0, 0.0, 1.0);
+        let flag = (ray.drc * outward_normal) < 0.0;
+        if !flag {
+            outward_normal = -outward_normal;
+        }
+        Some(Hitrecord {
+            u: (x - self.x0) / (self.x1 - self.x0),
+            v: (y - self.y0) / (self.y1 - self.y0),
+            t,
+            n: outward_normal,
+            front_face: flag,
+            mat_ptr: self.mat_ptr.clone(),
+            p: ray.at(t),
+        })
+    }
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
+        Some(AABB::new(
+            &Vec3::new(self.x0, self.y0, self.k - 0.0001),
+            &Vec3::new(self.x1, self.y1, self.k + 0.0001),
+        ))
+    }
+}

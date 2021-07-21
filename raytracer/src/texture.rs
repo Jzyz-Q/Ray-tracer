@@ -101,12 +101,7 @@ impl Texture for ImageTexture {
         let v = 1.0 - clamp(v, 0.0, 1.0);
         let mut i = (u * self.nx as f64) as u32;
         let mut j = (v * self.ny as f64 - 0.001) as u32;
-        // if i < 0 {
-        //     i = 0;
-        // }
-        // if j < 0 {
-        //     j = 0;
-        // }
+        
         if i >= self.nx {
             i = self.nx - 1;
         }
