@@ -37,8 +37,8 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 300;
-    let image_height = 300;
+    let image_width = 600;
+    let image_height = 600;
     let spp = 500;
     let max_depth = 50;
     let background = Vec3::zero();
