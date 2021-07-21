@@ -3,6 +3,7 @@ use crate::{
     ray::Ray,
     vec3::{random_unit_vector, Vec3},
 };
+use crate::bvh::random_in_unit_sphere;
 use rand::rngs::ThreadRng;
 use rand::Rng;
 use crate::texture::Texture;
@@ -195,5 +196,35 @@ impl Material for Diffuse {
 
     fn emitted(&self, u: f64, v: f64, p: &Vec3) -> Vec3 {
         self.emit.value(u, v, *p)
+    }
+}
+
+#[derive(Clone)]
+pub struct Isotropic {
+    pub albedo: Arc<dyn Texture>,
+}
+
+impl Isotropic {
+    pub fn new(albedo: Arc<dyn Texture>) -> Isotropic {
+        Isotropic { albedo }
+    }
+}
+
+impl Material for Isotropic {
+    fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
+        let sed = Ray::new(rec.p, random_in_unit_sphere(_rng));
+        let att = self.albedo.value(rec.u, rec.v, rec.p);
+        Some(Scatter {
+            ray: sed,
+            att,
+        })
+    }
+
+    fn emitted(&self, _u: f64, _v: f64, _p: &Vec3) -> Vec3 {
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
     }
 }

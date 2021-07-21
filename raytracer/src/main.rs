@@ -32,6 +32,7 @@ use crate::bvh::Xzrect;
 use crate::bvh::Boxes;
 use crate::bvh::RotateY;
 use crate::bvh::Translate;
+use crate::bvh::ConstantMedium;
 use std::path::Path;
 use image::ImageBuffer;
 use image::RgbImage;
@@ -380,10 +381,12 @@ fn simple_light() -> Hlist {
 fn cornell_box() -> Hlist {
     let mut objects = Hlist::new(true);
 
-    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(15.0, 15.0, 15.0)));
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
     let vr = Arc::<Solid>::new(Solid::new(Vec3::new(0.65, 0.05, 0.05)));
     let vw = Arc::<Solid>::new(Solid::new(Vec3::new(0.73, 0.73, 0.73)));
     let vg = Arc::<Solid>::new(Solid::new(Vec3::new(0.12, 0.45, 0.15)));
+    let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.0, 0.0, 0.0)));
+    let v2 = Arc::<Solid>::new(Solid::new(Vec3::new(1.0, 1.0, 1.0)));
 
     let red = Arc::<Lambertian>::new(Lambertian::new(vr));
     let white = Arc::<Lambertian>::new(Lambertian::new(vw));
@@ -393,11 +396,13 @@ fn cornell_box() -> Hlist {
     let box1 = Arc::<Boxes>::new(Boxes::new(&Vec3::new(0.0, 0.0, 0.0), &Vec3::new(165.0, 330.0, 165.0), white.clone()));
     let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 15.0));
     let box1 = Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(265.0, 0.0, 265.0)));
+    let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
     objects.push(box1);
 
     let box2 = Arc::<Boxes>::new(Boxes::new(&Vec3::new(0.0, 0.0, 0.0), &Vec3::new(165.0, 165.0, 165.0), white.clone()));
     let box2 = Arc::<RotateY>::new(RotateY::new(box2.clone(), -18.0));
     let box2 = Arc::<Translate>::new(Translate::new(box2.clone(), &Vec3::new(130.0, 0.0, 65.0)));
+    let box2 = Arc::<ConstantMedium>::new(ConstantMedium::new(box2.clone(), 0.01, v2));
     objects.push(box2);
 
     objects.push(Arc::<Yzrect>::new(Yzrect::new(
