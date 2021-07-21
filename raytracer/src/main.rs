@@ -43,7 +43,7 @@ use rand::Rng;
 fn main() {
     let image_width = 600;
     let image_height = 600;
-    let spp = 500;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -424,10 +424,10 @@ fn cornell_box() -> Hlist {
     )));
 
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        213.0,
-        343.0,
-        227.0,
-        332.0,
+        113.0,
+        443.0,
+        127.0,
+        432.0,
         554.0,
         light.clone()
     )));
