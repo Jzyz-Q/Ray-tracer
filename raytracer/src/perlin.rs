@@ -8,9 +8,9 @@ pub const POINT_COUNT: usize = 256;
 #[derive(Clone)]
 pub struct Perlin {
     ranvec: Vec<Vec3>,
-    perm_x: Vec<usize>,
-    perm_y: Vec<usize>,
-    perm_z: Vec<usize>,
+    perm_x: Vec<i32>,
+    perm_y: Vec<i32>,
+    perm_z: Vec<i32>,
 }
 
 impl Perlin {
@@ -46,19 +46,27 @@ impl Perlin {
         let _i = p.x.floor() as i32;
         let _j = p.y.floor() as i32;
         let _k = p.z.floor() as i32;
-        let mut c: [[[Vec3; 2]; 2]; 2] = [[[Vec3::zero(); 2]; 2]; 2];
+        let mut accum = 0.0;
+        //let mut c: [[[Vec3; 2]; 2]; 2] = [[[Vec3::zero(); 2]; 2]; 2];
 
         for di in 0..2 {
             for dj in 0..2 {
                 for dk in 0..2 {
-                    c[di][dj][dk] = self.ranvec[(self.perm_x[255 & (_i + di as i32) as usize]
+                    let c = self.ranvec[(self.perm_x[255 & (_i + di as i32) as usize]
                         ^ self.perm_y[255 & (_j + dj as i32) as usize]
                         ^ self.perm_z[255 & (_k + dk as i32) as usize])
                         as usize];
+
+                    let weight_v = Vec3::new(_u - di as f64, _v - dj as f64, _w - dk as f64);
+
+                    accum += (di as f64 * uu + (1.0 - di as f64) * (1.0 - uu))
+                        * (dj as f64 * vv + (1.0 - dj as f64) * (1.0 - vv))
+                        * (dk as f64 * ww + (1.0 - dk as f64) * (1.0 - ww))
+                        * (c * weight_v);
                 }
             }
         }
-        interp(c, uu, vv, ww)
+        accum
         //self.ranfloat[self.perm_x[_i] ^ self.perm_y[_j] ^ self.perm_z[_k]]
     }
 
@@ -68,7 +76,7 @@ impl Perlin {
         let mut temp_p: Vec3 = p;
         let mut weight: f64 = 1.0;
 
-        for _i in 0..depth {
+        for _i in 1..depth {
             accum += weight * self.noise(temp_p);
             weight *= 0.5;
             temp_p *= 2.0;
@@ -78,17 +86,17 @@ impl Perlin {
     }
 }
 
-pub fn perlin_generate_perm() -> Vec<usize> {
-    let mut p: Vec<usize> = Vec::new();
+pub fn perlin_generate_perm() -> Vec<i32> {
+    let mut p: Vec<i32> = Vec::new();
 
     for i in 0..POINT_COUNT {
-        p.push(i as usize);
+        p.push(i as i32);
     }
     permute(&mut p, POINT_COUNT as i32);
     p
 }
 
-pub fn permute(p: &mut Vec<usize>, n: i32) {
+pub fn permute(p: &mut Vec<i32>, n: i32) {
     for i in (0..n).rev() {
         let i = i as usize;
         //let target = random_int(0, n-i);
@@ -100,9 +108,9 @@ pub fn permute(p: &mut Vec<usize>, n: i32) {
     }
 }
 
-pub fn interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+/* pub fn interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
     let mut accum: f64 = 0.0;
-    for i in 0..2 {
+    for (i, <item>::) in c.iter().enumerate() {
         for j in 0..2 {
             for k in 0..2 {
                 let weight_v = Vec3::new(u - (i as f64), v - (j as f64), w - (k as f64));
@@ -114,4 +122,4 @@ pub fn interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
         }
     }
     accum
-}
+} */

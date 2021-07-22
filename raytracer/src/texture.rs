@@ -16,7 +16,7 @@ pub struct CheckerT {
 }
 
 impl CheckerT {
-    pub fn new1(a: Arc<dyn Texture>, b: Arc<dyn Texture>) -> CheckerT {
+    /* pub fn new1(a: Arc<dyn Texture>, b: Arc<dyn Texture>) -> CheckerT {
         CheckerT { odd: a, even: b }
     }
 
@@ -25,7 +25,7 @@ impl CheckerT {
             odd: Arc::new(Solid::new(*a)),
             even: Arc::new(Solid::new(*b)),
         }
-    }
+    } */
 }
 
 impl Texture for CheckerT {
@@ -35,7 +35,7 @@ impl Texture for CheckerT {
         if sines < 0.0 {
             self.odd.value(u, v, p)
         } else {
-            return self.even.value(u, v, p);
+            self.even.value(u, v, p)
         }
     }
 }

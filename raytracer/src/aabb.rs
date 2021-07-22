@@ -48,13 +48,21 @@ pub fn surrounding_box(box0: AABB, box1: AABB) -> AABB {
         getmax(box0._max.z, box1._max.z),
     );
 
-    return AABB::new(&small, &big);
+    AABB::new(&small, &big)
 }
 
 pub fn getmin(af: f64, bf: f64) -> f64 {
-    return if af > bf { bf } else { af };
+    if af > bf {
+        bf
+    } else {
+        af
+    }
 }
 
 pub fn getmax(af: f64, bf: f64) -> f64 {
-    return if af > bf { af } else { bf };
+    if af > bf {
+        af
+    } else {
+        bf
+    }
 }

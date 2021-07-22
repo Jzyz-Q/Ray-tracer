@@ -1,3 +1,4 @@
+#[deny(clippy::float_cmp)]
 use rand::rngs::ThreadRng;
 use rand::Rng;
 use std::ops::Index;

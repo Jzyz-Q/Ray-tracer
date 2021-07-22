@@ -1,3 +1,4 @@
+#[allow(clippy::float_cmp)]
 mod aabb;
 mod bvh;
 mod camera;
@@ -15,7 +16,6 @@ use crate::bvh::Translate;
 //use crate::bvh::Xyrect;
 use crate::bvh::Xzrect;
 //use crate::bvh::Yzrect;
-#[allow(clippy::float_cmp)]
 use crate::camera::Camera;
 use crate::hittable::Arc;
 use crate::hittable::Hitrecord;
@@ -213,16 +213,12 @@ fn ray_color(_r: &Ray, background: &Vec3, world: &Hlist, depth: i32) -> Vec3 {
                         scattered.att,
                         ray_color(&scattered.ray, &background, &world, depth - 1),
                     ) + emitted;
-                    return rt;
+                    rt
                 }
-                None => {
-                    return emitted;
-                }
+                None => emitted,
             }
         }
-        None => {
-            return *background;
-        }
+        None => *background,
     }
 
     // let unit_drc: Vec3 = _r.drc.unit();
@@ -561,12 +557,7 @@ fn final_scene() -> Hlist {
     let vl = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        123.0,
-        423.0,
-        147.0,
-        412.0,
-        554.0,
-        light.clone(),
+        123.0, 423.0, 147.0, 412.0, 554.0, light,
     )));
 
     // let center1 = Vec3::new(400.0, 400.0, 200.0);
@@ -594,7 +585,7 @@ fn final_scene() -> Hlist {
     ));
     objects.push(boundary.clone());
     objects.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
-        boundary.clone(),
+        boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.2, 0.4, 0.9))),
     )));
@@ -618,10 +609,18 @@ fn final_scene() -> Hlist {
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(400.0, 200.0, 400.0),
         100.0,
-        Arc::<Lambertian>::new(Lambertian::new(imgtext.clone())),
+        Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
 
     // perlin
+
+    // let pn = Perlin::new();
+    // let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
+    // objects.push(Arc::<Sphere>::new(Sphere::new(
+    //     Vec3::new(0.0, -1000.0, 0.0),
+    //     1000.0,
+    //     Arc::<Lambertian>::new(Lambertian::new(pertext.clone())),
+    // )));
     let pn = Perlin::new();
     let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
     objects.push(Arc::<Sphere>::new(Sphere::new(
