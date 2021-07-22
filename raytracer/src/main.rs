@@ -42,9 +42,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 300;
-    let image_height = 300;
-    let spp = 100;
+    let image_width = 600;
+    let image_height = 600;
+    let spp = 600;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -541,7 +541,6 @@ fn final_scene() -> Hlist {
 
     // earth
     let path = Path::new("input.jpg");
-    let mut objects = Hlist::new(true);
 
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
     objects.push(Arc::<Sphere>::new(Sphere::new(
