@@ -552,15 +552,18 @@ fn final_scene() -> Hlist {
             // let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
             // objects.push(box1);
 
-            let box1 = (Arc::<Boxes>::new(Boxes::new(
+            let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.9568, 0.694, 0.5137)));
+
+            let box1 = Arc::<Boxes>::new(Boxes::new(
                 &Vec3::new(x0, y0, z0),
                 &Vec3::new(x1, y1, z1),
                 ground.clone(),
-            )));
+            ));
             let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 0.0));
-            let box1 = Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(0.0, 0.0, 0.0)));
+            let box1 =
+                Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(0.0, 0.0, 0.0)));
             let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
-            objects.push(box1);
+            boxes1.push(box1);
         }
     }
 
