@@ -6,11 +6,12 @@ pub use crate::vec3::Vec3;
 pub struct Ray {
     pub org: Vec3,
     pub drc: Vec3,
+    pub tm: f64,
 }
 
 impl Ray {
-    pub fn new(org: Vec3, drc: Vec3) -> Self {
-        Self { org, drc }
+    pub fn new(org: Vec3, drc: Vec3, tm: f64) -> Self {
+        Self { org, drc, tm }
     }
 
     pub fn at(&self, t: f64) -> Vec3 {

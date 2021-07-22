@@ -54,7 +54,7 @@ impl Lambertian {
 impl Material for Lambertian {
     fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
         let s_drc: Vec3 = rec.n + random_unit_vector(_rng);
-        let sed = Ray::new(rec.p, s_drc);
+        let sed = Ray::new(rec.p, s_drc, _r_in.tm);
         let att = self.albedo.value(rec.u, rec.v, rec.p);
         let rt = Scatter::new(att, sed);
         Some(rt)
@@ -95,6 +95,7 @@ impl Material for Metal {
         let sed = Ray::new(
             rec.p,
             red + crate::vec3::random_in_unit_sphere(_rng) * self.fuzz,
+            _r_in.tm,
         );
         let att = self.albedo;
         let rt = Scatter::new(att, sed);
@@ -149,7 +150,7 @@ impl Material for Dielectric {
         if eoe * sin_theta > 1.0 {
             // must reflect
             let reflected: Vec3 = reflect(unit_drc, rec.n);
-            let sed = Ray::new(rec.p, reflected);
+            let sed = Ray::new(rec.p, reflected, _r_in.tm);
             let rt = Scatter::new(att, sed);
             return Some(rt);
         }
@@ -158,13 +159,13 @@ impl Material for Dielectric {
         let flag: f64 = rand::thread_rng().gen();
         if flag < reflect_prob {
             let reflected: Vec3 = reflect(unit_drc, rec.n);
-            let sed = Ray::new(rec.p, reflected);
+            let sed = Ray::new(rec.p, reflected, _r_in.tm);
             let rt = Scatter::new(att, sed);
             return Some(rt);
         }
 
         let refracted = refract(unit_drc, rec.n, eoe);
-        let sed = Ray::new(rec.p, refracted);
+        let sed = Ray::new(rec.p, refracted, _r_in.tm);
         let rt = Scatter::new(att, sed);
         Some(rt)
     }
@@ -212,7 +213,7 @@ impl Isotropic {
 
 impl Material for Isotropic {
     fn scatter(&self, _r_in: &Ray, rec: &Hitrecord, _rng: &mut ThreadRng) -> Option<Scatter> {
-        let sed = Ray::new(rec.p, random_in_unit_sphere(_rng));
+        let sed = Ray::new(rec.p, random_in_unit_sphere(_rng), _r_in.tm);
         let att = self.albedo.value(rec.u, rec.v, rec.p);
         Some(Scatter { ray: sed, att })
     }

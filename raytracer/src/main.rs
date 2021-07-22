@@ -29,6 +29,7 @@ use crate::material::Metal;
 use crate::perlin::Perlin;
 use crate::ray::Ray;
 //use crate::texture::CheckerT;
+use crate::hittable::MovingSphere;
 use crate::texture::ImageTexture;
 use crate::texture::Noise;
 use crate::texture::Solid;
@@ -55,10 +56,10 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 600;
-    let height = 600;
-    let spp = 1000;
-    let max_depth = 100;
+    let width = 300;
+    let height = 300;
+    let spp = 100;
+    let max_depth = 50;
     let background = Vec3::zero();
 
     let (tx, rx) = channel();
@@ -87,6 +88,8 @@ fn main() {
         aspect_ratio,
         aperture,
         dist_to_focus,
+        0.0,
+        1.0,
     );
 
     let world = final_scene();
@@ -530,10 +533,10 @@ fn final_scene() -> Hlist {
     let mut boxes1 = Hlist::new(true);
 
     // light
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(15.0, 15.0, 15.0)));
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(25.0, 25.0, 25.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        223.0, 323.0, 247.0, 312.0, 554.0, light,
+        203.0, 343.0, 227.0, 332.0, 554.0, light,
     )));
 
     // background && ground
@@ -561,6 +564,11 @@ fn final_scene() -> Hlist {
     let path = Path::new("moon.jpg");
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
     let moon = Arc::<Lambertian>::new(Lambertian::new(imgtext));
+
+    // sky
+    let path_sky = Path::new("sky.jpg");
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path_sky));
+    let sky = Arc::<Lambertian>::new(Lambertian::new(imgtext));
 
     objects.push(Arc::<Yzrect>::new(Yzrect::new(
         0.0,
@@ -595,12 +603,7 @@ fn final_scene() -> Hlist {
     )));
 
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        0.0,
-        555.0,
-        0.0,
-        555.0,
-        555.0,
-        blue.clone(),
+        0.0, 555.0, 0.0, 555.0, 555.0, sky,
     )));
 
     let boxex_per_side = 20;
@@ -637,8 +640,8 @@ fn final_scene() -> Hlist {
 
     objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
 
-    // let center1 = Vec3::new(400.0, 400.0, 200.0);
-    // let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
+    let center1 = Vec3::new(420.0, 400.0, 400.0);
+    let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
 
     // cloud
     let path = Path::new("cloud.jpg");
@@ -646,7 +649,7 @@ fn final_scene() -> Hlist {
     let imgtext1 = Arc::<ImageTexture>::new(ImageTexture::new(path));
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(220.0, 280.0, 300.0),
-        80.0,
+        65.0,
         Arc::<Lambertian>::new(Lambertian::new(imgtext1.clone())),
     )));
 
@@ -658,10 +661,13 @@ fn final_scene() -> Hlist {
     )));
 
     // metal
-    objects.push(Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(0.0, 150.0, 145.0),
-        50.0,
-        Arc::<Metal>::new(Metal::new(Vec3::new(0.8, 0.8, 0.9), 10.0)),
+    objects.push(Arc::<MovingSphere>::new(MovingSphere::new(
+        center1,
+        center2,
+        0.0,
+        1.0,
+        30.0,
+        Arc::<Metal>::new(Metal::new(Vec3::new(0.7, 0.3, 0.1), 10.0)),
     )));
 
     // fog
@@ -694,7 +700,7 @@ fn final_scene() -> Hlist {
 
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
     objects.push(Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(400.0, 200.0, 400.0),
+        Vec3::new(410.0, 200.0, 400.0),
         100.0,
         Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
@@ -727,7 +733,7 @@ fn final_scene() -> Hlist {
             Arc::<BvhNode>::new(BvhNode::new_list(boxes2, 0.0, 1.0)),
             15.0,
         )),
-        &Vec3::new(-100.0, 270.0, 395.0),
+        &Vec3::new(-100.0, 290.0, 395.0),
     )));
 
     objects

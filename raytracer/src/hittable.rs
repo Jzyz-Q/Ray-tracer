@@ -88,7 +88,7 @@ impl Object for Sphere {
         let c = oc.squared_length() - self.rd * self.rd;
         let dis = b * b - a * c;
 
-        if (dis > 0.0) {
+        if dis > 0.0 {
             let root = dis.sqrt();
 
             let mut temp = (0.0 - b - root) / a;
@@ -490,7 +490,7 @@ impl Translate {
 
 impl Object for Translate {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
-        let moved_r = Ray::new(ray.org - self.offset, ray.drc);
+        let moved_r = Ray::new(ray.org - self.offset, ray.drc, ray.tm);
         if let Some(mut rec) = self.ptr.hit(&moved_r, t_min, t_max) {
             let flag = (moved_r.drc * rec.n) < 0.0;
             if !flag {
@@ -588,7 +588,7 @@ impl Object for RotateY {
         drc.x = self.cos_theta * ray.drc.x - self.sin_theta * ray.drc.z;
         drc.z = self.sin_theta * ray.drc.x + self.cos_theta * ray.drc.z;
 
-        let rotated_r = Ray::new(org, drc);
+        let rotated_r = Ray::new(org, drc, ray.tm);
         if let Some(rec) = self.ptr.hit(&rotated_r, t_min, t_max) {
             let mut p = rec.p;
             let mut n = rec.n;
@@ -693,5 +693,87 @@ impl Object for ConstantMedium {
 
     fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
         self.boundary.bounding_box(t0, t1)
+    }
+}
+
+#[derive(Clone)]
+pub struct MovingSphere {
+    pub center0: Vec3,
+    pub center1: Vec3,
+    pub time0: f64,
+    pub time1: f64,
+    pub radius: f64,
+    pub mat_ptr: Arc<dyn Material>,
+}
+
+impl MovingSphere {
+    pub fn new(ct0: Vec3, ct1: Vec3, t0: f64, t1: f64, r: f64, m: Arc<dyn Material>) -> Self {
+        Self {
+            center0: ct0,
+            center1: ct1,
+            time0: t0,
+            time1: t1,
+            radius: r,
+            mat_ptr: m,
+        }
+    }
+
+    pub fn center(&self, time: f64) -> Vec3 {
+        self.center0
+            + (self.center1 - self.center0) * ((time - self.time0) / (self.time1 - self.time0))
+    }
+}
+
+impl Object for MovingSphere {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
+        let oc = r.org - self.center(r.tm);
+        let a = r.drc.squared_length();
+        let b = oc * r.drc;
+        let c = oc.squared_length() - self.radius * self.radius;
+        let dis = b * b - a * c;
+
+        if dis > 0.0 {
+            let root = dis.sqrt();
+
+            let temp = (-b - root) / a;
+            if temp < t_max && temp > t_min {
+                let temp_p = r.at(temp);
+                let temp_n: Vec3 = (temp_p - self.center(r.tm)).unit();
+                let outward_normal = (temp_p - self.center(r.tm)) / self.radius;
+                let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
+
+                rec.set_face_normal(&r, outward_normal);
+                let res = get_sphere_uv(&((rec.p - self.center(r.tm)) / self.radius));
+                rec.set_uv(res);
+                return Some(rec);
+            }
+
+            let temp = (-b + root) / a;
+            if temp < t_max && temp > t_min {
+                let temp_p = r.at(temp);
+                let temp_n: Vec3 = (temp_p - self.center(r.tm)).unit();
+                let outward_normal = (temp_p - self.center(r.tm)) / self.radius;
+                let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
+
+                rec.set_face_normal(&r, outward_normal);
+                let res = get_sphere_uv(&((rec.p - self.center(r.tm)) / self.radius));
+                rec.set_uv(res);
+                return Some(rec);
+            }
+        }
+        return None;
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<AABB> {
+        let box0 = AABB {
+            _min: self.center(t0) - Vec3::new(self.radius, self.radius, self.radius),
+            _max: self.center(t0) + Vec3::new(self.radius, self.radius, self.radius),
+        };
+        let box1 = AABB {
+            _min: self.center(t1) - Vec3::new(self.radius, self.radius, self.radius),
+            _max: self.center(t1) + Vec3::new(self.radius, self.radius, self.radius),
+        };
+        let output_box = surrounding_box(box0, box1);
+        Some(output_box)
     }
 }

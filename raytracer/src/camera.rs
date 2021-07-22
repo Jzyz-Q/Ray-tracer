@@ -1,4 +1,5 @@
 #![allow(warnings, unused)]
+use crate::random_double_limit;
 use crate::{ray::Ray, vec3::random_in_unit_disk, vec3::Vec3};
 use rand::rngs::ThreadRng;
 
@@ -13,6 +14,8 @@ pub struct Camera {
     pub v: Vec3,
     pub w: Vec3,
     pub len_r: f64,
+    pub time0: f64,
+    pub time1: f64,
 }
 
 impl Camera {
@@ -24,6 +27,8 @@ impl Camera {
         aspect: f64,
         aperture: f64,
         focus_dist: f64,
+        t0: f64,
+        t1: f64,
     ) -> Camera {
         let theta = vfov * std::f64::consts::PI / 180.0;
         let h_height: f64 = (theta / 2.0).tan();
@@ -45,6 +50,8 @@ impl Camera {
             hor: u1 * 2.0 * h_width * focus_dist,
             ver: v1 * 2.0 * h_height * focus_dist,
             len_r: 0.5 * aperture,
+            time0: t0,
+            time1: t1,
         }
     }
 
@@ -55,6 +62,7 @@ impl Camera {
         let rt = Ray::new(
             self.sor + offset,
             self.cor + self.hor * a + self.ver * b - self.sor - offset,
+            random_double_limit(self.time0, self.time1),
         );
         return rt;
     }
