@@ -648,6 +648,8 @@ impl ConstantMedium {
 
 impl Object for ConstantMedium {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
+        let mut rng = rand::thread_rng();
+       
         if let Some(mut rec1) = self.boundary.hit(ray, -std::f64::INFINITY, std::f64::INFINITY) {
             if let Some(mut rec2) = self.boundary.hit(ray, rec1.t + 0.0001, std::f64::INFINITY) {
                 if rec1.t < t_min {
@@ -668,13 +670,12 @@ impl Object for ConstantMedium {
 
                 let ray_length = ray.drc.length();
                 let distance_inside_boundary = (rec2.t - rec1.t) * ray_length;
-                let mut rng = rand::thread_rng();
                 let hit_distance = self.neg * rng.gen::<f64>().ln();
 
                 if hit_distance > distance_inside_boundary {
                     return None;
                 }      
-                Some(Hitrecord {
+                return Some(Hitrecord {
                     t: rec1.t + hit_distance / ray_length,
                     p: ray.at(rec1.t + hit_distance / ray_length),
                     n: Vec3::new(1.0, 0.0, 0.0),
@@ -682,7 +683,7 @@ impl Object for ConstantMedium {
                     mat_ptr: self.phase_function.clone(),
                     u: 0.0,
                     v: 0.0,
-                })
+                });
             }
             else {
                 return None;

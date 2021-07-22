@@ -33,6 +33,7 @@ use crate::bvh::Boxes;
 use crate::bvh::RotateY;
 use crate::bvh::Translate;
 use crate::bvh::ConstantMedium;
+use crate::bvh::BvhNode;
 use std::path::Path;
 use image::ImageBuffer;
 use image::RgbImage;
@@ -41,9 +42,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 600;
-    let image_height = 600;
-    let spp = 1000;
+    let image_width = 400;
+    let image_height = 400;
+    let spp = 600;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -56,7 +57,7 @@ fn main() {
     let h_f = image_height as f64;
 
     let aspect_ratio = w_f / h_f;
-    let lookfrom = Vec3::new(278.0, 278.0, -800.0);
+    let lookfrom = Vec3::new(478.0, 278.0, -600.0);
     let lookat = Vec3::new(278.0, 278.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus: f64 = 10.0;
@@ -72,7 +73,7 @@ fn main() {
         dist_to_focus,
     );
 
-    let world = cornell_box();
+    let world = final_scene();
 
     // let m1 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
     // let m2 = Arc::<Lambertian>::new(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
@@ -460,3 +461,130 @@ fn cornell_box() -> Hlist {
     )));
     objects
 }
+
+fn final_scene() -> Hlist {
+    let mut boxes1 = Hlist::new(true);
+
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.48, 0.83, 0.53)));
+    let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
+
+    let boxex_per_side = 20;
+    for _i in 0..boxex_per_side {
+        for _j in 0..boxex_per_side {
+            let w: f64 = 100.0;
+            let x0: f64 = -1000.0 + w * _i as f64;
+            let z0: f64 = -1000.0 + w * _j as f64;
+            let y0: f64 = 0.0;
+            let x1: f64 = x0 + w;
+            let y1: f64 = random_double_limit(1.0, 101.0);
+            let z1: f64 = z0 + w;
+
+            boxes1.push(Arc::<Boxes>::new(Boxes::new(&Vec3::new(x0, y0, z0), &Vec3::new(x1, y1, z1), ground.clone())));
+        }
+    }
+
+    let mut objects = Hlist::new(true);
+    objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
+
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
+    let light = Arc::<Diffuse>::new(Diffuse::new(vl)); 
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        123.0,
+        423.0,
+        147.0,
+        412.0,
+        554.0,
+        light.clone()
+    )));
+
+    return objects;
+
+    // let center1 = Vec3::new(400.0, 400.0, 200.0);
+    // let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
+
+    // dielectric
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(260.0, 150.0, 45.0),
+        50.0,
+        Arc::<Dielectric>::new(Dielectric::new(1.5))
+    )));
+
+    // metal
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 150.0, 145.0),
+        50.0,
+        Arc::<Metal>::new(Metal::new(Vec3::new(0.8, 0.8, 0.9), 10.0))
+    )));
+
+    // fog
+    let mut boundary = Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(360.0, 150.0, 145.0),
+        70.0,
+        Arc::<Dielectric>::new(Dielectric::new(1.5))
+    ));
+    objects.push(boundary.clone());
+    objects.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+        boundary.clone(),
+        0.2,
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.2, 0.4, 0.9)))
+    )));
+
+    // fog
+    let mut boundary = Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(0.0, 0.0, 0.0),
+        5000.0,
+        Arc::<Dielectric>::new(Dielectric::new(1.5))
+    ));
+    objects.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+        boundary,
+        0.0001,
+        Arc::<Solid>::new(Solid::new(Vec3::new(1.0, 1.0, 1.0)))
+    )));
+
+    // earth
+    let path = Path::new("input.jpg");
+    let mut objects = Hlist::new(true);
+
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(400.0, 200.0, 400.0), 
+        100.0,
+        Arc::<Lambertian>::new(Lambertian::new(imgtext.clone()))
+    )));
+
+    // perlin
+    let pn = Perlin::new();
+    let pertext = Arc::<Noise>::new(Noise::new(pn, 0.1));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(220.0, 280.0, 300.0),
+        80.0,
+        Arc::<Lambertian>::new(Lambertian::new(pertext))
+    )));
+
+    // 多球立方体
+    let mut boxes2 = Hlist::new(true);
+    let vw = Arc::<Solid>::new(Solid::new(Vec3::new(0.73, 0.73, 0.73)));
+    let white = Arc::<Lambertian>::new(Lambertian::new(vw));
+
+    let ns: i32 = 1000;
+    for j in 0..ns {
+        boxes2.push(Arc::<Sphere>::new(Sphere::new(
+            random_limit(0.0, 165.0),
+            10.0,
+            white.clone()
+        )));
+    }
+
+    objects.push(Arc::<Translate>::new(Translate::new(
+        Arc::<RotateY>::new(RotateY::new(
+            Arc::<BvhNode>::new(BvhNode::new_list(
+                boxes2, 0.0, 1.0
+            )),
+            15.0
+        )),
+        &Vec3::new(-100.0, 270.0, 395.0)
+    )));
+
+    objects
+}
+

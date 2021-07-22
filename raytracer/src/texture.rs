@@ -77,6 +77,7 @@ impl Texture for Noise {
         Vec3::ones() * 0.5 * (1.0 + (self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin())
     }
 }
+
 #[derive(Clone)]
 pub struct ImageTexture {
     pub img: image::DynamicImage,
