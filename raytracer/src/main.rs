@@ -42,9 +42,9 @@ use rand::rngs::ThreadRng;
 use rand::Rng;
 
 fn main() {
-    let image_width = 400;
-    let image_height = 400;
-    let spp = 600;
+    let image_width = 300;
+    let image_height = 300;
+    let spp = 100;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -496,8 +496,6 @@ fn final_scene() -> Hlist {
         554.0,
         light.clone()
     )));
-
-    return objects;
 
     // let center1 = Vec3::new(400.0, 400.0, 200.0);
     // let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
