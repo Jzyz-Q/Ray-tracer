@@ -58,7 +58,7 @@ fn main() {
 
     let width = 700;
     let height = 700;
-    let spp = 10000;
+    let spp = 8000;
     let max_depth = 500;
     let background = Vec3::zero();
 
@@ -533,7 +533,7 @@ fn final_scene() -> Hlist {
     let mut boxes1 = Hlist::new(true);
 
     // light
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(18.0, 18.0, 18.0)));
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(20.0, 20.0, 20.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
         203.0, 343.0, 227.0, 332.0, 554.0, light,
@@ -640,7 +640,7 @@ fn final_scene() -> Hlist {
 
     objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
 
-    let center1 = Vec3::new(420.0, 370.0, 400.0);
+    let center1 = Vec3::new(440.0, 370.0, 400.0);
     let center2 = center1 + Vec3::new(40.0, 40.0, 0.0);
 
     // cloud
