@@ -9,9 +9,9 @@ pub struct AABB {
 
 impl AABB {
     pub fn new(_min: &Vec3, _max: &Vec3) -> AABB {
-        AABB { 
+        AABB {
             _min: *_min,
-            _max: *_max 
+            _max: *_max,
         }
     }
 
@@ -40,21 +40,21 @@ pub fn surrounding_box(box0: AABB, box1: AABB) -> AABB {
     let small = Vec3::new(
         getmin(box0._min.x, box1._min.x),
         getmin(box0._min.y, box1._min.y),
-        getmin(box0._min.z, box1._min.z)
+        getmin(box0._min.z, box1._min.z),
     );
     let big = Vec3::new(
         getmax(box0._max.x, box1._max.x),
         getmax(box0._max.y, box1._max.y),
-        getmax(box0._max.z, box1._max.z)
+        getmax(box0._max.z, box1._max.z),
     );
 
     return AABB::new(&small, &big);
 }
 
 pub fn getmin(af: f64, bf: f64) -> f64 {
-    return if af > bf {bf} else {af};
+    return if af > bf { bf } else { af };
 }
 
 pub fn getmax(af: f64, bf: f64) -> f64 {
-    return if af > bf {af} else {bf};
+    return if af > bf { af } else { bf };
 }

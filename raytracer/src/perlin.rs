@@ -1,11 +1,9 @@
-use rand::Rng;
-use crate::Vec3;
-use crate::ThreadRng;
-use rand::random;
 use crate::bvh::random_in_unit_sphere;
-use crate::random_limit;
+use crate::ThreadRng;
+use crate::Vec3;
+use rand::random;
 
-pub const point_count: usize = 256;
+pub const POINT_COUNT: usize = 256;
 
 #[derive(Clone)]
 pub struct Perlin {
@@ -18,7 +16,7 @@ pub struct Perlin {
 impl Perlin {
     pub fn new() -> Perlin {
         let mut ranvec: Vec<Vec3> = Vec::new();
-        for i in 0..point_count {
+        for _i in 0..POINT_COUNT {
             //ranvec.push(random_limit(-1.0, 1.0).unit());
             let mut rng: ThreadRng = rand::thread_rng();
             ranvec.push(random_in_unit_sphere(&mut rng));
@@ -41,9 +39,9 @@ impl Perlin {
         let _v = p.y - p.y.floor();
         let _w = p.z - p.z.floor();
 
-        let uu = _u * _u * (3.0-2.0*_u);
-        let vv = _v * _v * (3.0-2.0*_v);
-        let ww = _w * _w * (3.0-2.0*_w);
+        let uu = _u * _u * (3.0 - 2.0 * _u);
+        let vv = _v * _v * (3.0 - 2.0 * _v);
+        let ww = _w * _w * (3.0 - 2.0 * _w);
 
         let _i = p.x.floor() as i32;
         let _j = p.y.floor() as i32;
@@ -53,11 +51,10 @@ impl Perlin {
         for di in 0..2 {
             for dj in 0..2 {
                 for dk in 0..2 {
-                    c[di][dj][dk] = self.ranvec[(
-                        self.perm_x[255 & (_i + di as i32) as usize] ^
-                        self.perm_y[255 & (_j + dj as i32) as usize] ^
-                        self.perm_z[255 & (_k + dk as i32) as usize]) as usize
-                    ];
+                    c[di][dj][dk] = self.ranvec[(self.perm_x[255 & (_i + di as i32) as usize]
+                        ^ self.perm_y[255 & (_j + dj as i32) as usize]
+                        ^ self.perm_z[255 & (_k + dk as i32) as usize])
+                        as usize];
                 }
             }
         }
@@ -67,16 +64,16 @@ impl Perlin {
 
     pub fn turb(&self, p: Vec3, depth: i32) -> f64 {
         //depth == 7
-        let mut accum:f64 = 0.0;
+        let mut accum: f64 = 0.0;
         let mut temp_p: Vec3 = p;
         let mut weight: f64 = 1.0;
-    
-        for i in 0..depth {
+
+        for _i in 0..depth {
             accum += weight * self.noise(temp_p);
             weight *= 0.5;
             temp_p *= 2.0;
         }
-    
+
         accum.abs()
     }
 }
@@ -84,10 +81,10 @@ impl Perlin {
 pub fn perlin_generate_perm() -> Vec<usize> {
     let mut p: Vec<usize> = Vec::new();
 
-    for i in 0..point_count {
+    for i in 0..POINT_COUNT {
         p.push(i as usize);
     }
-    permute(&mut p, point_count as i32);
+    permute(&mut p, POINT_COUNT as i32);
     p
 }
 
@@ -103,24 +100,18 @@ pub fn permute(p: &mut Vec<usize>, n: i32) {
     }
 }
 
-pub fn random_int(a: usize, b: usize) -> usize {
-    let mut rng = rand::thread_rng();
-    return rng.gen_range(a..b);
-}
-
-pub fn interp(mut c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+pub fn interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
     let mut accum: f64 = 0.0;
-    for i in 0..2{
+    for i in 0..2 {
         for j in 0..2 {
             for k in 0..2 {
-                let weight_v = Vec3::new(u-(i as f64), v-(j as f64), w-(k as f64));
-                accum += ((i as f64)*u + (1.0 - (i as f64))*(1.0 - u)) *
-                         ((j as f64)*v + (1.0 - (j as f64))*(1.0 - v)) *
-                         ((k as f64)*w + (1.0 - (k as f64))*(1.0 - w)) *
-                         (c[i][j][k] * weight_v);
+                let weight_v = Vec3::new(u - (i as f64), v - (j as f64), w - (k as f64));
+                accum += ((i as f64) * u + (1.0 - (i as f64)) * (1.0 - u))
+                    * ((j as f64) * v + (1.0 - (j as f64)) * (1.0 - v))
+                    * ((k as f64) * w + (1.0 - (k as f64)) * (1.0 - w))
+                    * (c[i][j][k] * weight_v);
             }
         }
     }
     accum
 }
-

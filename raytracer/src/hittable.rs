@@ -1,14 +1,14 @@
 #![allow(warnings, unused)]
 
-use crate::{material::Material, ray::Ray, vec3::Vec3, aabb::AABB};
-use std::ops::Mul;
-use rand::Rng;
-pub use std::sync::Arc;
-use core::f64::consts::PI;
 use crate::aabb::surrounding_box;
-use crate::random;
 use crate::material::Isotropic;
+use crate::random;
 use crate::texture::Texture;
+use crate::{aabb::AABB, material::Material, ray::Ray, vec3::Vec3};
+use core::f64::consts::PI;
+use rand::Rng;
+use std::ops::Mul;
+pub use std::sync::Arc;
 
 pub trait Object: Send + Sync {
     fn hit(&self, ray: &Ray, t1_min: f64, t1_max: f64) -> Option<Hitrecord>;
@@ -99,7 +99,7 @@ impl Object for Sphere {
                 let mut rec = Hitrecord::new(temp_p, temp_n, temp, self.mat_ptr.clone());
 
                 rec.set_face_normal(&r, outward_normal);
-                let res = get_sphere_uv(&((rec.p - self.ct)/self.rd));
+                let res = get_sphere_uv(&((rec.p - self.ct) / self.rd));
                 rec.set_uv(res);
                 return Some(rec);
             }
@@ -180,7 +180,7 @@ impl Object for Hlist {
 
         let mut output_box = AABB::new(&Vec3::zero(), &Vec3::zero());
         let mut first_box: bool = true;
-        
+
         for object in self.objects.iter() {
             let rec = object.bounding_box(t0, t1);
             match rec {
@@ -208,7 +208,7 @@ pub struct Xyrect {
     pub x1: f64,
     pub y0: f64,
     pub y1: f64,
-    pub k: f64, 
+    pub k: f64,
 }
 
 impl Xyrect {
@@ -265,7 +265,7 @@ pub struct Xzrect {
     pub x1: f64,
     pub z0: f64,
     pub z1: f64,
-    pub k: f64, 
+    pub k: f64,
 }
 
 impl Xzrect {
@@ -322,7 +322,7 @@ pub struct Yzrect {
     pub y1: f64,
     pub z0: f64,
     pub z1: f64,
-    pub k: f64, 
+    pub k: f64,
 }
 
 impl Yzrect {
@@ -376,14 +376,7 @@ impl Object for Yzrect {
 pub struct Boxes {
     pub box_min: Vec3,
     pub box_max: Vec3,
-    pub sides: (
-        Xyrect,
-        Xyrect,
-        Xzrect,
-        Xzrect,
-        Yzrect,
-        Yzrect,
-    ),
+    pub sides: (Xyrect, Xyrect, Xzrect, Xzrect, Yzrect, Yzrect),
 }
 
 impl Boxes {
@@ -398,7 +391,7 @@ impl Boxes {
                     y0: p0.y,
                     y1: p1.y,
                     k: p1.z,
-                    mat_ptr: mat_ptr.clone()
+                    mat_ptr: mat_ptr.clone(),
                 },
                 Xyrect {
                     x0: p0.x,
@@ -406,7 +399,7 @@ impl Boxes {
                     y0: p0.y,
                     y1: p1.y,
                     k: p0.z,
-                    mat_ptr: mat_ptr.clone()
+                    mat_ptr: mat_ptr.clone(),
                 },
                 Xzrect {
                     x0: p0.x,
@@ -414,7 +407,7 @@ impl Boxes {
                     z0: p0.z,
                     z1: p1.z,
                     k: p1.y,
-                    mat_ptr: mat_ptr.clone()
+                    mat_ptr: mat_ptr.clone(),
                 },
                 Xzrect {
                     x0: p0.x,
@@ -422,7 +415,7 @@ impl Boxes {
                     z0: p0.z,
                     z1: p1.z,
                     k: p0.y,
-                    mat_ptr: mat_ptr.clone()
+                    mat_ptr: mat_ptr.clone(),
                 },
                 Yzrect {
                     y0: p0.y,
@@ -430,7 +423,7 @@ impl Boxes {
                     z0: p0.z,
                     z1: p1.z,
                     k: p0.x,
-                    mat_ptr: mat_ptr.clone()
+                    mat_ptr: mat_ptr.clone(),
                 },
                 Yzrect {
                     y0: p0.y,
@@ -438,7 +431,7 @@ impl Boxes {
                     z0: p0.z,
                     z1: p1.z,
                     k: p1.x,
-                    mat_ptr: mat_ptr.clone()
+                    mat_ptr: mat_ptr.clone(),
                 },
             ),
         }
@@ -543,7 +536,11 @@ impl RotateY {
         let cos_theta = radians.cos();
 
         let mut _min = Vec3::new(std::f64::INFINITY, std::f64::INFINITY, std::f64::INFINITY);
-        let mut _max = Vec3::new(-std::f64::INFINITY, -std::f64::INFINITY, -std::f64::INFINITY);
+        let mut _max = Vec3::new(
+            -std::f64::INFINITY,
+            -std::f64::INFINITY,
+            -std::f64::INFINITY,
+        );
 
         if let Some(bbox) = ptr.bounding_box(0.0, 1.0) {
             let has_box = true;
@@ -581,7 +578,6 @@ impl RotateY {
 }
 
 impl Object for RotateY {
-    
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
         let mut org = ray.org;
         let mut drc = ray.drc;
@@ -649,8 +645,11 @@ impl ConstantMedium {
 impl Object for ConstantMedium {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Hitrecord> {
         let mut rng = rand::thread_rng();
-       
-        if let Some(mut rec1) = self.boundary.hit(ray, -std::f64::INFINITY, std::f64::INFINITY) {
+
+        if let Some(mut rec1) = self
+            .boundary
+            .hit(ray, -std::f64::INFINITY, std::f64::INFINITY)
+        {
             if let Some(mut rec2) = self.boundary.hit(ray, rec1.t + 0.0001, std::f64::INFINITY) {
                 if rec1.t < t_min {
                     rec1.t = t_min;
@@ -662,7 +661,7 @@ impl Object for ConstantMedium {
 
                 if rec1.t >= rec2.t {
                     return None;
-                } 
+                }
 
                 if rec1.t < 0.0 {
                     rec1.t = 0.0
@@ -674,7 +673,7 @@ impl Object for ConstantMedium {
 
                 if hit_distance > distance_inside_boundary {
                     return None;
-                }      
+                }
                 return Some(Hitrecord {
                     t: rec1.t + hit_distance / ray_length,
                     p: ray.at(rec1.t + hit_distance / ray_length),
@@ -684,12 +683,10 @@ impl Object for ConstantMedium {
                     u: 0.0,
                     v: 0.0,
                 });
-            }
-            else {
+            } else {
                 return None;
             }
-        }
-        else {
+        } else {
             return None;
         }
     }

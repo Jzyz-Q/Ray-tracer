@@ -1,8 +1,8 @@
-/* 
+/*
 if (ray hits bounding object)
     return whether ray hits bounded objects
 else
-    return false 
+    return false
 */
 pub use crate::aabb::*;
 pub use crate::hittable::*;
@@ -22,7 +22,13 @@ impl BvhNode {
         BvhNode::new(list.objects, 0, len, time0, time1)
     }
 
-    pub fn new(mut objects: Vec<Arc<dyn Object>>, start: usize, end: usize, time0: f64, time1: f64) -> Self {
+    pub fn new(
+        mut objects: Vec<Arc<dyn Object>>,
+        start: usize,
+        end: usize,
+        time0: f64,
+        time1: f64,
+    ) -> Self {
         let axis = rand::thread_rng().gen_range(0..3);
         let left;
         let right;
@@ -45,8 +51,7 @@ impl BvhNode {
                 if comparator(&objects[start], &objects[start + 1]) == Ordering::Less {
                     right = objects[start + 1].clone();
                     left = objects[start].clone();
-                }
-                else {
+                } else {
                     left = objects[start + 1].clone();
                     right = objects[start].clone();
                 }
@@ -129,4 +134,3 @@ impl Object for BvhNode {
         Some(self._box)
     }
 }
-

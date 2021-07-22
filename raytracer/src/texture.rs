@@ -1,14 +1,13 @@
+use crate::clamp;
 use crate::vec3::*;
 use crate::Perlin;
-use crate::clamp;
-use std::sync::Arc;
-use std::path::Path;
-use image::ImageDecoder;
 use image::GenericImageView;
+use std::path::Path;
+use std::sync::Arc;
 
 pub trait Texture: Sync + Send {
     fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3;
-} 
+}
 
 #[derive(Clone)]
 pub struct CheckerT {
@@ -26,14 +25,18 @@ impl CheckerT {
             odd: Arc::new(Solid::new(*a)),
             even: Arc::new(Solid::new(*b)),
         }
-    } 
+    }
 }
 
-impl Texture for CheckerT {       // 3D棋盘格
+impl Texture for CheckerT {
+    // 3D棋盘格
     fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
         let sines = (10.0 * p.x).sin() * (10.0 * p.y).sin() * (10.0 * p.z).sin();
-        if sines < 0.0 {self.odd.value(u, v, p)}
-        else {return self.even.value(u, v, p);}
+        if sines < 0.0 {
+            self.odd.value(u, v, p)
+        } else {
+            return self.even.value(u, v, p);
+        }
     }
 }
 
@@ -47,15 +50,15 @@ impl Solid {
         Solid { color }
     }
 
-    pub fn new1(r: f64, g: f64, b: f64) -> Solid {
-        Solid {
-            color: Vec3::new(r, g, b)
-        }
-    }
+    // pub fn new1(r: f64, g: f64, b: f64) -> Solid {
+    //     Solid {
+    //         color: Vec3::new(r, g, b),
+    //     }
+    // }
 }
 
 impl Texture for Solid {
-    fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
+    fn value(&self, _u: f64, _v: f64, _p: Vec3) -> Vec3 {
         self.color
     }
 }
@@ -73,7 +76,7 @@ impl Noise {
 }
 
 impl Texture for Noise {
-    fn value(&self, u: f64, v: f64, p: Vec3) -> Vec3 {
+    fn value(&self, _u: f64, _v: f64, p: Vec3) -> Vec3 {
         Vec3::ones() * 0.5 * (1.0 + (self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin())
     }
 }
@@ -97,12 +100,12 @@ impl ImageTexture {
 }
 
 impl Texture for ImageTexture {
-    fn value(&self, u: f64, v: f64, _p: Vec3) -> Vec3{
+    fn value(&self, u: f64, v: f64, _p: Vec3) -> Vec3 {
         let u = clamp(u, 0.0, 1.0);
         let v = 1.0 - clamp(v, 0.0, 1.0);
         let mut i = (u * self.nx as f64) as u32;
         let mut j = (v * self.ny as f64 - 0.001) as u32;
-        
+
         if i >= self.nx {
             i = self.nx - 1;
         }
@@ -118,9 +121,3 @@ impl Texture for ImageTexture {
         )
     }
 }
-
-
-
-
-
-
