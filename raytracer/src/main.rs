@@ -58,7 +58,7 @@ fn main() {
 
     let width = 300;
     let height = 300;
-    let spp = 100;
+    let spp = 300;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -533,7 +533,7 @@ fn final_scene() -> Hlist {
     let mut boxes1 = Hlist::new(true);
 
     // light
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(25.0, 25.0, 25.0)));
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(20.0, 20.0, 20.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
         203.0, 343.0, 227.0, 332.0, 554.0, light,
@@ -640,8 +640,8 @@ fn final_scene() -> Hlist {
 
     objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
 
-    let center1 = Vec3::new(420.0, 400.0, 400.0);
-    let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
+    let center1 = Vec3::new(420.0, 370.0, 400.0);
+    let center2 = center1 + Vec3::new(40.0, 40.0, 0.0);
 
     // cloud
     let path = Path::new("cloud.jpg");
@@ -649,7 +649,7 @@ fn final_scene() -> Hlist {
     let imgtext1 = Arc::<ImageTexture>::new(ImageTexture::new(path));
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(220.0, 280.0, 300.0),
-        65.0,
+        70.0,
         Arc::<Lambertian>::new(Lambertian::new(imgtext1.clone())),
     )));
 
