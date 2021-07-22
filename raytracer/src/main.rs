@@ -55,10 +55,10 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 400;
-    let height = 400;
-    let spp = 100;
-    let max_depth = 50;
+    let width = 600;
+    let height = 600;
+    let spp = 2000;
+    let max_depth = 100;
     let background = Vec3::zero();
 
     let (tx, rx) = channel();
