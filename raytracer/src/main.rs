@@ -55,9 +55,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 300;
-    let height = 300;
-    let spp = 200;
+    let width = 400;
+    let height = 400;
+    let spp = 400;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -575,6 +575,16 @@ fn final_scene() -> Hlist {
     // let center1 = Vec3::new(400.0, 400.0, 200.0);
     // let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
 
+    // cloud
+    let path = Path::new("cloud.jpg");
+
+    let imgtext1 = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(220.0, 280.0, 300.0),
+        80.0,
+        Arc::<Lambertian>::new(Lambertian::new(imgtext1.clone())),
+    )));
+
     // dielectric
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(260.0, 150.0, 45.0),
@@ -624,23 +634,23 @@ fn final_scene() -> Hlist {
         Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
 
-    // Sakura
+    /* // Sakura
     let path = Path::new("Sakura.jpg");
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
     objects.push(Arc::<Boxes>::new(Boxes::new(
         &Vec3::new(0.0, 0.0, 0.0),
         &Vec3::new(165.0, 330.0, 165.0),
         Arc::<Lambertian>::new(Lambertian::new(imgtext)),
-    )));
+    ))); */
 
     // perlin
-    let pn = Perlin::new();
+    /* let pn = Perlin::new();
     let pertext = Arc::<Noise>::new(Noise::new(pn, 0.1));
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(220.0, 280.0, 300.0),
         80.0,
         Arc::<Lambertian>::new(Lambertian::new(pertext)),
-    )));
+    ))); */
 
     // 多球立方体
     let mut boxes2 = Hlist::new(true);
