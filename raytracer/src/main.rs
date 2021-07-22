@@ -13,9 +13,9 @@ use crate::bvh::BvhNode;
 use crate::bvh::ConstantMedium;
 use crate::bvh::RotateY;
 use crate::bvh::Translate;
-//use crate::bvh::Xyrect;
+use crate::bvh::Xyrect;
 use crate::bvh::Xzrect;
-//use crate::bvh::Yzrect;
+use crate::bvh::Yzrect;
 use crate::camera::Camera;
 use crate::hittable::Arc;
 use crate::hittable::Hitrecord;
@@ -55,10 +55,10 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 400;
-    let height = 400;
-    let spp = 400;
-    let max_depth = 50;
+    let width = 600;
+    let height = 600;
+    let spp = 1000;
+    let max_depth = 100;
     let background = Vec3::zero();
 
     let (tx, rx) = channel();
@@ -73,7 +73,7 @@ fn main() {
     let h_f = height as f64;
 
     let aspect_ratio = w_f / h_f;
-    let lookfrom = Vec3::new(478.0, 278.0, -600.0);
+    let lookfrom = Vec3::new(278.0, 278.0, -800.0);
     let lookat = Vec3::new(278.0, 278.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus: f64 = 10.0;
@@ -526,10 +526,82 @@ fn tow_perlin_spheres() -> Hlist {
 } */
 
 fn final_scene() -> Hlist {
+    let mut objects = Hlist::new(true);
     let mut boxes1 = Hlist::new(true);
 
-    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.506, 0.706, 0.549)));
+    // light
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(15.0, 15.0, 15.0)));
+    let light = Arc::<Diffuse>::new(Diffuse::new(vl));
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        223.0, 323.0, 247.0, 312.0, 554.0, light,
+    )));
+
+    // background && ground
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.498, 0.533, 0.796)));
     let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
+
+    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.184, 0.2157, 0.4588)));
+    let vy = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
+
+    let blue = Arc::<Lambertian>::new(Lambertian::new(vb));
+    let yellow = Arc::<Lambertian>::new(Lambertian::new(vy.clone()));
+
+    // a box on the ground
+    let box2 = Arc::<Boxes>::new(Boxes::new(
+        &Vec3::new(0.0, 0.0, 0.0),
+        &Vec3::new(125.0, 125.0, 125.0),
+        yellow,
+    ));
+    let box2 = Arc::<RotateY>::new(RotateY::new(box2.clone(), -18.0));
+    let box2 = Arc::<Translate>::new(Translate::new(box2.clone(), &Vec3::new(130.0, 0.0, 65.0)));
+    let box2 = Arc::<ConstantMedium>::new(ConstantMedium::new(box2.clone(), 0.01, vy.clone()));
+    objects.push(box2);
+
+    // background picture moon
+    let path = Path::new("moon.jpg");
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    let moon = Arc::<Lambertian>::new(Lambertian::new(imgtext));
+
+    objects.push(Arc::<Yzrect>::new(Yzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        blue.clone(),
+    )));
+
+    objects.push(Arc::<Yzrect>::new(Yzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        blue.clone(),
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        blue.clone(),
+    )));
+
+    objects.push(Arc::<Xyrect>::new(Xyrect::new(
+        //背景
+        0.0, 555.0, 0.0, 555.0, 555.0, moon,
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        blue.clone(),
+    )));
 
     let boxex_per_side = 20;
     for _i in 0..boxex_per_side {
@@ -563,14 +635,7 @@ fn final_scene() -> Hlist {
         }
     }
 
-    let mut objects = Hlist::new(true);
     objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
-
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
-    let light = Arc::<Diffuse>::new(Diffuse::new(vl));
-    objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        123.0, 423.0, 147.0, 412.0, 554.0, light,
-    )));
 
     // let center1 = Vec3::new(400.0, 400.0, 200.0);
     // let center2 = center1 + Vec3::new(30.0, 0.0, 0.0);
@@ -633,15 +698,6 @@ fn final_scene() -> Hlist {
         100.0,
         Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
-
-    /* // Sakura
-    let path = Path::new("Sakura.jpg");
-    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
-    objects.push(Arc::<Boxes>::new(Boxes::new(
-        &Vec3::new(0.0, 0.0, 0.0),
-        &Vec3::new(165.0, 330.0, 165.0),
-        Arc::<Lambertian>::new(Lambertian::new(imgtext)),
-    ))); */
 
     // perlin
     /* let pn = Perlin::new();
