@@ -209,11 +209,10 @@ fn ray_color(_r: &Ray, background: &Vec3, world: &Hlist, depth: i32) -> Vec3 {
             let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
             match cur {
                 Some(scattered) => {
-                    let rt = Vec3::elemul(
+                    Vec3::elemul(
                         scattered.att,
                         ray_color(&scattered.ray, &background, &world, depth - 1),
                     ) + emitted;
-                    rt
                 }
                 None => emitted,
             }
@@ -613,14 +612,6 @@ fn final_scene() -> Hlist {
     )));
 
     // perlin
-
-    // let pn = Perlin::new();
-    // let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
-    // objects.push(Arc::<Sphere>::new(Sphere::new(
-    //     Vec3::new(0.0, -1000.0, 0.0),
-    //     1000.0,
-    //     Arc::<Lambertian>::new(Lambertian::new(pertext.clone())),
-    // )));
     let pn = Perlin::new();
     let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
     objects.push(Arc::<Sphere>::new(Sphere::new(
