@@ -12,9 +12,9 @@ use crate::bvh::BvhNode;
 use crate::bvh::ConstantMedium;
 use crate::bvh::RotateY;
 use crate::bvh::Translate;
-use crate::bvh::Xyrect;
+//use crate::bvh::Xyrect;
 use crate::bvh::Xzrect;
-use crate::bvh::Yzrect;
+//use crate::bvh::Yzrect;
 #[allow(clippy::float_cmp)]
 use crate::camera::Camera;
 use crate::hittable::Arc;
@@ -28,7 +28,7 @@ use crate::material::Lambertian;
 use crate::material::Metal;
 use crate::perlin::Perlin;
 use crate::ray::Ray;
-use crate::texture::CheckerT;
+//use crate::texture::CheckerT;
 use crate::texture::ImageTexture;
 use crate::texture::Noise;
 use crate::texture::Solid;
@@ -225,11 +225,11 @@ fn ray_color(_r: &Ray, background: &Vec3, world: &Hlist, depth: i32) -> Vec3 {
         }
     }
 
-    let unit_drc: Vec3 = _r.drc.unit();
-    let _t: f64 = 0.5 * (unit_drc.y + 1.0);
-    let tmp = Vec3::new(0.5, 0.7, 1.0);
-    let one = Vec3::ones();
-    one * (1.0 - _t) + tmp * _t
+    // let unit_drc: Vec3 = _r.drc.unit();
+    // let _t: f64 = 0.5 * (unit_drc.y + 1.0);
+    // let tmp = Vec3::new(0.5, 0.7, 1.0);
+    // let one = Vec3::ones();
+    // one * (1.0 - _t) + tmp * _t
 }
 
 fn write_color(_s: &Vec3, spp: i32) {
