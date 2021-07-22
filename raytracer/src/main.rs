@@ -55,10 +55,10 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 600;
-    let height = 600;
-    let spp = 1000;
-    let max_depth = 100;
+    let width = 400;
+    let height = 400;
+    let spp = 100;
+    let max_depth = 50;
     let background = Vec3::zero();
 
     let (tx, rx) = channel();
@@ -542,11 +542,25 @@ fn final_scene() -> Hlist {
             let y1: f64 = random_double_limit(1.0, 101.0);
             let z1: f64 = z0 + w;
 
-            boxes1.push(Arc::<Boxes>::new(Boxes::new(
+            // let box1 = Arc::<Boxes>::new(Boxes::new(
+            //     &Vec3::new(0.0, 0.0, 0.0),
+            //     &Vec3::new(165.0, 330.0, 165.0),
+            //     white.clone(),
+            // ));
+            // let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 15.0));
+            // let box1 = Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(265.0, 0.0, 265.0)));
+            // let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
+            // objects.push(box1);
+
+            let box1 = (Arc::<Boxes>::new(Boxes::new(
                 &Vec3::new(x0, y0, z0),
                 &Vec3::new(x1, y1, z1),
                 ground.clone(),
             )));
+            let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 0.0));
+            let box1 = Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(0.0, 0.0, 0.0)));
+            let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
+            objects.push(box1);
         }
     }
 
@@ -613,7 +627,7 @@ fn final_scene() -> Hlist {
 
     // perlin
     let pn = Perlin::new();
-    let pertext = Arc::<Noise>::new(Noise::new(pn, 4.0));
+    let pertext = Arc::<Noise>::new(Noise::new(pn, 0.1));
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(220.0, 280.0, 300.0),
         80.0,
