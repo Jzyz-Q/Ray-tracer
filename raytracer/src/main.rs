@@ -208,12 +208,12 @@ fn ray_color(_r: &Ray, background: &Vec3, world: &Hlist, depth: i32) -> Vec3 {
             let mut rng: ThreadRng = rand::thread_rng();
             let cur = val.mat_ptr.scatter(&_r, &val, &mut rng);
             match cur {
-                Some(scattered) => {
+                Some(scattered) => 
                     Vec3::elemul(
                         scattered.att,
                         ray_color(&scattered.ray, &background, &world, depth - 1),
                     ) + emitted;
-                }
+                
                 None => emitted,
             }
         }
