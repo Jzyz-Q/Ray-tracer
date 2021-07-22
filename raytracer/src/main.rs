@@ -55,10 +55,10 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 600;
-    let height = 600;
-    let spp = 2000;
-    let max_depth = 100;
+    let width = 300;
+    let height = 300;
+    let spp = 200;
+    let max_depth = 50;
     let background = Vec3::zero();
 
     let (tx, rx) = channel();
@@ -528,7 +528,7 @@ fn tow_perlin_spheres() -> Hlist {
 fn final_scene() -> Hlist {
     let mut boxes1 = Hlist::new(true);
 
-    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.48, 0.83, 0.53)));
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.506, 0.706, 0.549)));
     let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
 
     let boxex_per_side = 20;
@@ -542,17 +542,7 @@ fn final_scene() -> Hlist {
             let y1: f64 = random_double_limit(1.0, 101.0);
             let z1: f64 = z0 + w;
 
-            // let box1 = Arc::<Boxes>::new(Boxes::new(
-            //     &Vec3::new(0.0, 0.0, 0.0),
-            //     &Vec3::new(165.0, 330.0, 165.0),
-            //     white.clone(),
-            // ));
-            // let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 15.0));
-            // let box1 = Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(265.0, 0.0, 265.0)));
-            // let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
-            // objects.push(box1);
-
-            let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.9568, 0.694, 0.5137)));
+            /* let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.9568, 0.694, 0.5137)));
 
             let box1 = Arc::<Boxes>::new(Boxes::new(
                 &Vec3::new(x0, y0, z0),
@@ -563,7 +553,13 @@ fn final_scene() -> Hlist {
             let box1 =
                 Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(0.0, 0.0, 0.0)));
             let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
-            boxes1.push(box1);
+            boxes1.push(box1); */
+
+            boxes1.push(Arc::<Boxes>::new(Boxes::new(
+                &Vec3::new(x0, y0, z0),
+                &Vec3::new(x1, y1, z1),
+                ground.clone(),
+            )));
         }
     }
 
@@ -625,6 +621,15 @@ fn final_scene() -> Hlist {
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(400.0, 200.0, 400.0),
         100.0,
+        Arc::<Lambertian>::new(Lambertian::new(imgtext)),
+    )));
+
+    // Sakura
+    let path = Path::new("Sakura.jpg");
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    objects.push(Arc::<Boxes>::new(Boxes::new(
+        &Vec3::new(0.0, 0.0, 0.0),
+        &Vec3::new(165.0, 330.0, 165.0),
         Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
 
