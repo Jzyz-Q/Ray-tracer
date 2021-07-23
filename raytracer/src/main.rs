@@ -892,7 +892,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(225.0, 180.0, 150.0),
         34.0,
-        Arc::<Diffuse>::new(Diffuse::new(van.clone())),
+        Arc::<Diffuse>::new(Diffuse::new(van)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
