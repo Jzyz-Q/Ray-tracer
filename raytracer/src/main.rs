@@ -58,8 +58,8 @@ fn main() {
 
     let width = 600;
     let height = 600;
-    let spp = 6000;
-    let max_depth = 400;
+    let spp = 5000;
+    let max_depth = 200;
     let background = Vec3::zero();
 
     let (tx, rx) = channel();
