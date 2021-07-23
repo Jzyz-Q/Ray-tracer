@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 1000;
+    let spp = 5000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -868,7 +868,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(145.0, 184.0, 125.0),
         33.0,
-        Arc::<Diffuse>::new(Diffuse::new(vanan.clone())),
+        Arc::<Diffuse>::new(Diffuse::new(vanan)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
