@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 5000;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -829,8 +829,8 @@ fn cloud() -> Hlist {
     )));
 
     let v = Arc::<Solid>::new(Solid::new(Vec3::new(0.6, 0.6, 0.6)));
-    let van = Arc::<Solid>::new(Solid::new(Vec3::new(0.35, 0.35, 0.35)));
-    let vanan = Arc::<Solid>::new(Solid::new(Vec3::new(0.3, 0.3, 0.3)));
+    let van = Arc::<Solid>::new(Solid::new(Vec3::new(0.45, 0.45, 0.45)));
+    let vanan = Arc::<Solid>::new(Solid::new(Vec3::new(0.4, 0.4, 0.4)));
 
     let path = Path::new("surface.jpg");
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
@@ -870,6 +870,7 @@ fn cloud() -> Hlist {
         33.0,
         Arc::<Isotropic>::new(Isotropic::new(iso)),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
