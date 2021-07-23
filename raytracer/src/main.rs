@@ -966,13 +966,13 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(1, 0.98, 0.95))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(1.0, 0.98, 0.95))),
     )));
 
     // 13
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(379.0, 300.0, 150.0),
-        34,
+        34.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -984,13 +984,35 @@ fn cloud() -> Hlist {
     // 14
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(326.0, 317.0, 145.0),
-        38,
+        38.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+    )));
+
+    // metal
+    let center1 = Vec3::new(440.0, 370.0, 400.0);
+    let center2 = center1 + Vec3::new(40.0, 40.0, 0.0);
+    objects.push(Arc::<MovingSphere>::new(MovingSphere::new(
+        center1,
+        center2,
+        0.0,
+        1.0,
+        45.0,
+        Arc::<Metal>::new(Metal::new(Vec3::new(0.7, 0.3, 0.1), 10.0)),
+    )));
+
+    // earth
+    let path = Path::new("input.jpg");
+
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(410.0, 200.0, 400.0),
+        100.0,
+        Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
 
 
