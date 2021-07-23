@@ -1,6 +1,6 @@
 use crate::clamp;
 use crate::vec3::*;
-use crate::Perlin;
+// use crate::Perlin;
 use image::GenericImageView;
 use std::path::Path;
 use std::sync::Arc;
@@ -16,16 +16,16 @@ pub struct CheckerT {
 }
 
 impl CheckerT {
-    /* pub fn new1(a: Arc<dyn Texture>, b: Arc<dyn Texture>) -> CheckerT {
-        CheckerT { odd: a, even: b }
-    }
+    // pub fn new1(a: Arc<dyn Texture>, b: Arc<dyn Texture>) -> CheckerT {
+    //     CheckerT { odd: a, even: b }
+    // }
 
-    pub fn new(a: &Vec3, b: &Vec3) -> CheckerT {
-        CheckerT {
-            odd: Arc::new(Solid::new(*a)),
-            even: Arc::new(Solid::new(*b)),
-        }
-    } */
+    // pub fn new(a: &Vec3, b: &Vec3) -> CheckerT {
+    //     CheckerT {
+    //         odd: Arc::new(Solid::new(*a)),
+    //         even: Arc::new(Solid::new(*b)),
+    //     }
+    // }
 }
 
 impl Texture for CheckerT {
@@ -63,7 +63,7 @@ impl Texture for Solid {
     }
 }
 
-#[derive(Clone)]
+/* #[derive(Clone)]
 pub struct Noise {
     noise: Perlin,
     scale: f64,
@@ -79,7 +79,7 @@ impl Texture for Noise {
     fn value(&self, _u: f64, _v: f64, p: Vec3) -> Vec3 {
         Vec3::ones() * 0.5 * (1.0 + (self.scale * p.z + 10.0 * self.noise.turb(p, 7)).sin())
     }
-}
+} */
 
 #[derive(Clone)]
 pub struct ImageTexture {

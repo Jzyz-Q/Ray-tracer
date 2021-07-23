@@ -3,8 +3,6 @@ use crate::ThreadRng;
 use crate::Vec3;
 use rand::random;
 
-pub const POINT_COUNT: usize = 256;
-
 #[derive(Clone)]
 pub struct Perlin {
     ranvec: Vec<Vec3>,
@@ -15,6 +13,7 @@ pub struct Perlin {
 
 impl Perlin {
     pub fn new() -> Perlin {
+        let POINT_COUNT: usize = 256;
         let mut ranvec: Vec<Vec3> = Vec::new();
         for _i in 0..POINT_COUNT {
             //ranvec.push(random_limit(-1.0, 1.0).unit());
@@ -87,6 +86,7 @@ impl Perlin {
 }
 
 pub fn perlin_generate_perm() -> Vec<i32> {
+    let POINT_COUNT: usize = 256;
     let mut p: Vec<i32> = Vec::new();
 
     for i in 0..POINT_COUNT {

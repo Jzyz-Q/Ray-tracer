@@ -4,7 +4,7 @@ mod bvh;
 mod camera;
 mod hittable;
 mod material;
-mod perlin;
+// mod perlin;
 mod ray;
 mod texture;
 mod vec3;
@@ -26,12 +26,12 @@ use crate::material::Dielectric;
 use crate::material::Diffuse;
 use crate::material::Lambertian;
 use crate::material::Metal;
-use crate::perlin::Perlin;
+// use crate::perlin::Perlin;
 use crate::ray::Ray;
-//use crate::texture::CheckerT;
+// use crate::texture::CheckerT;
 use crate::hittable::MovingSphere;
 use crate::texture::ImageTexture;
-use crate::texture::Noise;
+// use crate::texture::Noise;
 use crate::texture::Solid;
 use crate::vec3::Vec3;
 use image::ImageBuffer;
@@ -58,7 +58,7 @@ fn main() {
 
     let width = 800;
     let height = 800;
-    let spp = 6000;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -347,8 +347,8 @@ fn random_limit(_min: f64, _max: f64) -> Vec3 {
     )));
     world
 } */
-/*
-fn two_sphere() -> Hlist {
+
+/* fn two_sphere() -> Hlist {
     let mut objects = Hlist::new(true);
 
     let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.2, 0.3, 0.1)));
@@ -368,8 +368,8 @@ fn two_sphere() -> Hlist {
     )));
     objects
 } */
-/*
-fn tow_perlin_spheres() -> Hlist {
+
+/* fn tow_perlin_spheres() -> Hlist {
     let mut objects = Hlist::new(true);
 
     let pn = Perlin::new();
@@ -386,8 +386,8 @@ fn tow_perlin_spheres() -> Hlist {
         Arc::<Lambertian>::new(Lambertian::new(pertext.clone())),
     )));
     objects
-}
- */
+} */
+
 /* fn earth() -> Hlist {
     let path = Path::new("input.jpg");
     let mut objects = Hlist::new(true);
@@ -555,9 +555,9 @@ fn final_scene() -> Hlist {
         &Vec3::new(125.0, 125.0, 125.0),
         yellow,
     ));
-    let box2 = Arc::<RotateY>::new(RotateY::new(box2.clone(), -18.0));
-    let box2 = Arc::<Translate>::new(Translate::new(box2.clone(), &Vec3::new(130.0, 0.0, 65.0)));
-    let box2 = Arc::<ConstantMedium>::new(ConstantMedium::new(box2.clone(), 0.01, vy.clone()));
+    let box2 = Arc::<RotateY>::new(RotateY::new(box2, -18.0));
+    let box2 = Arc::<Translate>::new(Translate::new(box2, &Vec3::new(130.0, 0.0, 65.0)));
+    let box2 = Arc::<ConstantMedium>::new(ConstantMedium::new(box2, 0.01, vy));
     objects.push(box2);
 
     // background picture moon
@@ -589,12 +589,7 @@ fn final_scene() -> Hlist {
     )));
 
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        0.0,
-        555.0,
-        0.0,
-        555.0,
-        0.0,
-        blue.clone(),
+        0.0, 555.0, 0.0, 555.0, 0.0, blue,
     )));
 
     objects.push(Arc::<Xyrect>::new(Xyrect::new(
@@ -650,7 +645,7 @@ fn final_scene() -> Hlist {
     objects.push(Arc::<Sphere>::new(Sphere::new(
         Vec3::new(220.0, 280.0, 300.0),
         70.0,
-        Arc::<Lambertian>::new(Lambertian::new(imgtext1.clone())),
+        Arc::<Lambertian>::new(Lambertian::new(imgtext1)),
     )));
 
     // dielectric
