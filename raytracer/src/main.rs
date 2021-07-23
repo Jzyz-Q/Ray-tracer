@@ -57,9 +57,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 500;
-    let height = 500;
-    let spp = 8000;
+    let width = 800;
+    let height = 800;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -995,12 +995,12 @@ fn cloud() -> Hlist {
         37.5,
         Arc::<Dielectric>::new(Dielectric::new(3.0)),
     ));
-    group.push(boundary.clone());
-    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+    group.push(boundary);
+    /* group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.956))),
-    )));
+    ))); */
 
     // 12
     let boundary = Arc::<Sphere>::new(Sphere::new(
