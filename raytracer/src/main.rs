@@ -744,14 +744,14 @@ fn cloud() -> Hlist {
     let vl = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        53.0, 493.0, 77.0, 482.0, 554.0, light,
+        203.0, 343.0, 227.0, 332.0, 554.0, light,
     )));
 
     // background && ground
     let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.9)));
     let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
 
-    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.835, 0.706, 0.902)));
+    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.184, 0.2157, 0.4588)));
     let blue = Arc::<Lambertian>::new(Lambertian::new(vb));
 
     let boxex_per_side = 20;
