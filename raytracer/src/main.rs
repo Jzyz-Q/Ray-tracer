@@ -32,6 +32,7 @@ use crate::ray::Ray;
 use crate::hittable::MovingSphere;
 use crate::texture::ImageTexture;
 // use crate::texture::Noise;
+use crate::material::Isotropic;
 use crate::texture::Solid;
 use crate::vec3::Vec3;
 use image::ImageBuffer;
@@ -56,9 +57,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 600;
-    let height = 600;
-    let spp = 6000;
+    let width = 400;
+    let height = 400;
+    let spp = 300;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -92,7 +93,7 @@ fn main() {
         1.0,
     );
 
-    let world = final_scene();
+    let world = cloud();
 
     // let mut _j = image_height - 1;
     // while _j >= 0 {
@@ -731,5 +732,119 @@ fn final_scene() -> Hlist {
         &Vec3::new(-100.0, 290.0, 395.0),
     )));
 
+    objects
+}
+
+fn cloud() -> Hlist {
+    let mut objects = Hlist::new(true);
+    let mut group = Hlist::new(true);
+
+    // light
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(25.0, 25.0, 25.0)));
+    let light = Arc::<Diffuse>::new(Diffuse::new(vl));
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        203.0, 343.0, 227.0, 332.0, 554.0, light,
+    )));
+
+    // background && ground
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.498, 0.533, 0.796)));
+    let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
+
+    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.184, 0.2157, 0.4588)));
+    let blue = Arc::<Lambertian>::new(Lambertian::new(vb));
+
+    // background picture moon
+    let path = Path::new("moon.jpg");
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    let moon = Arc::<Lambertian>::new(Lambertian::new(imgtext));
+
+    objects.push(Arc::<Yzrect>::new(Yzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        555.0,
+        blue.clone(),
+    )));
+
+    objects.push(Arc::<Yzrect>::new(Yzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        blue.clone(),
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        0.0,
+        555.0,
+        0.0,
+        555.0,
+        0.0,
+        blue.clone(),
+    )));
+
+    objects.push(Arc::<Xyrect>::new(Xyrect::new(
+        //背景
+        0.0, 555.0, 0.0, 555.0, 555.0, moon,
+    )));
+
+    objects.push(Arc::<Xzrect>::new(Xzrect::new(
+        0.0, 555.0, 0.0, 555.0, 555.0, blue,
+    )));
+
+    // 1左下角
+    let boundary = Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(72.0, 181.0, 145.0),
+        8.0,
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+    ));
+    group.push(boundary.clone());
+    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+        boundary,
+        0.2,
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+    )));
+
+    // 2右下角
+    let boundary = Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(393.0, 151.0, 180.0),
+        8.0,
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+    ));
+    group.push(boundary.clone());
+    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+        boundary,
+        0.2,
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+    )));
+
+    // 中间 1
+    let iso = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
+    let boundary = Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(105.0, 164.0, 140.0),
+        6.8,
+        Arc::<Isotropic>::new(Isotropic::new(iso)),
+    ));
+    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+        boundary,
+        0.2,
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+    )));
+
+    // 2
+    let boundary = Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(144.0, 176.0, 180.0),
+        6.8,
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+    ));
+    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+        boundary,
+        0.2,
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+    )));
+
+    objects.push(Arc::<BvhNode>::new(BvhNode::new_list(group, 0.0, 1.0)));
     objects
 }
