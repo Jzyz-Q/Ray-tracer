@@ -828,13 +828,17 @@ fn cloud() -> Hlist {
         0.0, 555.0, 0.0, 555.0, 555.0, blue,
     )));
 
-    let v = Arc::<Solid>::new(Solid::new(Vec3::new(0.8, 0.8, 0.8)));
+    let v = Arc::<Solid>::new(Solid::new(Vec3::new(0.6, 0.6, 0.6)));
+
+    let path = Path::new("surface.jpg");
+    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    let surface = Arc::<Diffuse>::new(Diffuse::new(imgtext));
 
     // 1左下角
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(112.0, 201.0, 145.0),
         40.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -866,7 +870,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.90))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.98))),
     )));
 
     // 2
@@ -891,7 +895,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.976))),
     )));
 
     // 4
@@ -903,7 +907,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.966))),
     )));
 
     // 5
@@ -936,7 +940,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(191.0, 241.0, 145.0),
         33.0,
-        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -946,11 +950,7 @@ fn cloud() -> Hlist {
     )));
 
     // 8
-    let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(229.0, 249.0, 160.0),
-        50.0,
-        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
-    ));
+    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 160.0), 50.0, surface));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
@@ -975,13 +975,12 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(348.0, 256.0, 170.0),
         35.0,
-        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
-    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.936))),
     )));
 
     // 11
@@ -993,7 +992,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.956))),
     )));
 
     // 12
@@ -1019,7 +1018,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.986))),
     )));
 
     // 14
@@ -1032,7 +1031,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.956))),
     )));
 
     // metal
