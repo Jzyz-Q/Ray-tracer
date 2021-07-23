@@ -57,8 +57,8 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 300;
-    let height = 300;
+    let width = 200;
+    let height = 200;
     let spp = 800;
     let max_depth = 50;
     let background = Vec3::zero();
@@ -272,14 +272,14 @@ fn random() -> Vec3 {
     Vec3::new(random_double(), random_double(), random_double())
 }
 
-fn random_limit(_min: f64, _max: f64) -> Vec3 {
+/* fn random_limit(_min: f64, _max: f64) -> Vec3 {
     Vec3::new(
         random_double_limit(_min, _max),
         random_double_limit(_min, _max),
         random_double_limit(_min, _max),
     )
 }
-
+ */
 /* fn random_scene() -> Hlist {
     let mut world = Hlist::new(true);
 
@@ -529,7 +529,7 @@ fn random_limit(_min: f64, _max: f64) -> Vec3 {
     objects
 } */
 
-fn final_scene() -> Hlist {
+/* fn final_scene() -> Hlist {
     let mut objects = Hlist::new(true);
     let mut boxes1 = Hlist::new(true);
 
@@ -733,7 +733,7 @@ fn final_scene() -> Hlist {
     )));
 
     objects
-}
+} */
 
 fn cloud() -> Hlist {
     let mut objects = Hlist::new(true);
@@ -1038,7 +1038,6 @@ fn cloud() -> Hlist {
         45.0,
         Arc::<Metal>::new(Metal::new(Vec3::new(0.7, 0.3, 0.1), 10.0)),
     )));
-
 
     objects.push(Arc::<BvhNode>::new(BvhNode::new_list(group, 0.0, 1.0)));
     objects
