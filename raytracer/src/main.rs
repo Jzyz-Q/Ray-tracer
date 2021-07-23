@@ -848,10 +848,20 @@ fn cloud() -> Hlist {
     )));
 
     // 2右下角
+    // cloud
+    let path = Path::new("cloud.jpg");
+
+    let imgtext1 = Arc::<ImageTexture>::new(ImageTexture::new(path));
+    objects.push(Arc::<Sphere>::new(Sphere::new(
+        Vec3::new(220.0, 280.0, 300.0),
+        70.0,
+        Arc::<Diffuse>::new(Diffuse::new(imgtext1)),
+    )));
+    
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(433.0, 171.0, 180.0),
         40.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        imgtext1,
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
