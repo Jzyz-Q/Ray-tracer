@@ -57,9 +57,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 200;
-    let height = 200;
-    let spp = 100;
+    let width = 500;
+    let height = 500;
+    let spp = 2000;
     let max_depth = 50;
     let background = Vec3::zero();
 
