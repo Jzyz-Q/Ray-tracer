@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 800;
+    let spp = 500;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -747,10 +747,7 @@ fn cloud() -> Hlist {
     )));
 
     // background && ground
-    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.498, 0.533, 0.796)));
-    let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
-
-    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.184, 0.2157, 0.4588)));
+    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.498, 0.533, 0.796)));
     let blue = Arc::<Lambertian>::new(Lambertian::new(vb));
 
     // background picture moon
