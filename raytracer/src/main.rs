@@ -59,7 +59,7 @@ fn main() {
 
     let width = 500;
     let height = 500;
-    let spp = 8000;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -894,14 +894,14 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(225.0, 180.0, 150.0),
         34.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Dielectric>::new(Dielectric::new(3)),
     ));
     group.push(boundary);
-    /* group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.976))),
-    ))); */
+    )));
 
     // 4
     let boundary = Arc::<Sphere>::new(Sphere::new(
@@ -981,7 +981,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(348.0, 256.0, 170.0),
         35.0,
-        Arc::<Dielectric>::new(Dielectric::new(2.5)),
+        Arc::<Dielectric>::new(Dielectric::new(3)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
@@ -993,7 +993,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(412.0, 267.0, 150.0),
         37.5,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Dielectric>::new(Dielectric::new(3)),
     ));
     group.push(boundary);
     /* group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
