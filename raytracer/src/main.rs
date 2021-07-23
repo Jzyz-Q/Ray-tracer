@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 300;
+    let spp = 800;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -740,7 +740,7 @@ fn cloud() -> Hlist {
     let mut group = Hlist::new(true);
 
     // light
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(25.0, 25.0, 25.0)));
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(30.0, 30.0, 30.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
         203.0, 343.0, 227.0, 332.0, 554.0, light,
@@ -796,8 +796,8 @@ fn cloud() -> Hlist {
 
     // 1左下角
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(72.0, 181.0, 145.0),
-        8.0,
+        Vec3::new(102.0, 181.0, 145.0),
+        80.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(boundary.clone());
@@ -809,8 +809,8 @@ fn cloud() -> Hlist {
 
     // 2右下角
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(393.0, 151.0, 180.0),
-        8.0,
+        Vec3::new(423.0, 151.0, 180.0),
+        80.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(boundary.clone());
@@ -823,8 +823,8 @@ fn cloud() -> Hlist {
     // 中间 1
     let iso = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(105.0, 164.0, 140.0),
-        6.8,
+        Vec3::new(135.0, 164.0, 140.0),
+        68.0,
         Arc::<Isotropic>::new(Isotropic::new(iso)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -835,8 +835,8 @@ fn cloud() -> Hlist {
 
     // 2
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(144.0, 176.0, 180.0),
-        6.8,
+        Vec3::new(174.0, 176.0, 180.0),
+        68.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
