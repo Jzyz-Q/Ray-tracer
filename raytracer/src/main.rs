@@ -849,7 +849,7 @@ fn cloud() -> Hlist {
 
     // 2右下角
     // cloud
-    let path = Path::new("cloud.jpg");
+    let path = Path::new("Mercury.jpg");
     let imgtext1 = Arc::<ImageTexture>::new(ImageTexture::new(path));
     let cloud = Arc::<Diffuse>::new(Diffuse::new(imgtext1));
 
