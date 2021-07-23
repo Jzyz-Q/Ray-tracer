@@ -828,7 +828,7 @@ fn cloud() -> Hlist {
         0.0, 555.0, 0.0, 555.0, 555.0, blue,
     )));
 
-    let v = Arc::<Solid>::new(Solid::new(Vec3::new(2.0, 2.0, 2.0)));
+    let v = Arc::<Solid>::new(Solid::new(Vec3::new(0.8, 0.8, 0.8)));
 
     // 1左下角
     let boundary = Arc::<Sphere>::new(Sphere::new(
@@ -936,8 +936,9 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(191.0, 241.0, 145.0),
         33.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
@@ -948,8 +949,9 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(229.0, 249.0, 160.0),
         50.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
