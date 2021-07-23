@@ -57,9 +57,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 400;
-    let height = 400;
-    let spp = 500;
+    let width = 300;
+    let height = 300;
+    let spp = 800;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -75,7 +75,7 @@ fn main() {
     let h_f = height as f64;
 
     let aspect_ratio = w_f / h_f;
-    let lookfrom = Vec3::new(278.0, 278.0, -800.0);
+    let lookfrom = Vec3::new(278.0, 278.0, -780.0);
     let lookat = Vec3::new(278.0, 278.0, 0.0);
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus: f64 = 10.0;
@@ -738,17 +738,54 @@ fn final_scene() -> Hlist {
 fn cloud() -> Hlist {
     let mut objects = Hlist::new(true);
     let mut group = Hlist::new(true);
+    let mut boxes1 = Hlist::new(true);
 
     // light
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(30.0, 30.0, 30.0)));
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(20.0, 20.0, 20.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
         153.0, 393.0, 177.0, 382.0, 554.0, light,
     )));
 
     // background && ground
-    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.498, 0.533, 0.796)));
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.9)));
+    let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
+
+    let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.835, 0.706, 0.902)));
     let blue = Arc::<Lambertian>::new(Lambertian::new(vb));
+
+    let boxex_per_side = 20;
+    for _i in 0..boxex_per_side {
+        for _j in 0..boxex_per_side {
+            let w: f64 = 100.0;
+            let x0: f64 = -1000.0 + w * _i as f64;
+            let z0: f64 = -1000.0 + w * _j as f64;
+            let y0: f64 = 0.0;
+            let x1: f64 = x0 + w;
+            let y1: f64 = random_double_limit(1.0, 101.0);
+            let z1: f64 = z0 + w;
+
+            let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(1.0, 1.0, 1.0)));
+
+            let box1 = Arc::<Boxes>::new(Boxes::new(
+                &Vec3::new(x0, y0, z0),
+                &Vec3::new(x1, y1, z1),
+                ground.clone(),
+            ));
+            let box1 = Arc::<RotateY>::new(RotateY::new(box1.clone(), 0.0));
+            let box1 =
+                Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(0.0, 0.0, 0.0)));
+            let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
+            boxes1.push(box1);
+
+            /* boxes1.push(Arc::<Boxes>::new(Boxes::new(
+                &Vec3::new(x0, y0, z0),
+                &Vec3::new(x1, y1, z1),
+                ground.clone(),
+            ))); */
+        }
+    }
+    objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
 
     // background picture moon
     let path = Path::new("moon.jpg");
@@ -902,19 +939,19 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.956))),
     )));
 
     // 8
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(229.0, 249.0, 160.0),
-        75.0,
+        50.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.926))),
     )));
 
     // 9
@@ -926,7 +963,7 @@ fn cloud() -> Hlist {
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
-        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886))),
+        Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.926))),
     )));
 
     // 10
@@ -1000,16 +1037,6 @@ fn cloud() -> Hlist {
         1.0,
         45.0,
         Arc::<Metal>::new(Metal::new(Vec3::new(0.7, 0.3, 0.1), 10.0)),
-    )));
-
-    // earth
-    let path = Path::new("input.jpg");
-
-    let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
-    objects.push(Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(410.0, 200.0, 400.0),
-        100.0,
-        Arc::<Lambertian>::new(Lambertian::new(imgtext)),
     )));
 
 
