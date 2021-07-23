@@ -741,10 +741,10 @@ fn cloud() -> Hlist {
     let mut boxes1 = Hlist::new(true);
 
     // light
-    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(10.0, 10.0, 10.0)));
+    let vl = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
     let light = Arc::<Diffuse>::new(Diffuse::new(vl));
     objects.push(Arc::<Xzrect>::new(Xzrect::new(
-        153.0, 393.0, 177.0, 382.0, 554.0, light,
+        53.0, 493.0, 77.0, 482.0, 554.0, light,
     )));
 
     // background && ground
