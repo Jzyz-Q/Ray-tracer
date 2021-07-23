@@ -920,7 +920,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(327.0, 173.0, 150.0),
         38.0,
-        Arc::<Diffuse>::new(Diffuse::new(vanan)),
+        Arc::<Metal>::new(Metal::new(Vec3::new(0.98, 0.98, 0.98), 10.0)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -956,7 +956,7 @@ fn cloud() -> Hlist {
     )));
 
     // 8
-    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 150.0), 55.0, surface));
+    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 125.0), 55.0, surface));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
