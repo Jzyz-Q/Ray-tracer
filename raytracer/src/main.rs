@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 5000;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -829,7 +829,8 @@ fn cloud() -> Hlist {
     )));
 
     let v = Arc::<Solid>::new(Solid::new(Vec3::new(0.6, 0.6, 0.6)));
-    let van = Arc::<Solid>::new(Solid::new(Vec3::new(0.2, 0.2, 0.2)));
+    let van = Arc::<Solid>::new(Solid::new(Vec3::new(0.35, 0.35, 0.35)));
+    let vanan = Arc::<Solid>::new(Solid::new(Vec3::new(0.3, 0.3, 0.3)));
 
     let path = Path::new("surface.jpg");
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
@@ -892,7 +893,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(225.0, 180.0, 150.0),
         34.0,
-        Arc::<Diffuse>::new(Diffuse::new(van)),
+        Arc::<Diffuse>::new(Diffuse::new(van.clone())),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -905,7 +906,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(276.0, 184.0, 145.0),
         34.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(van)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -918,7 +919,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(327.0, 173.0, 150.0),
         38.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(vanan)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
