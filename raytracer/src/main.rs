@@ -32,7 +32,7 @@ use crate::ray::Ray;
 use crate::hittable::MovingSphere;
 use crate::texture::ImageTexture;
 // use crate::texture::Noise;
-use crate::material::Isotropic;
+// use crate::material::Isotropic;
 use crate::texture::Solid;
 use crate::vec3::Vec3;
 use image::ImageBuffer;
@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 4000;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -864,11 +864,11 @@ fn cloud() -> Hlist {
     )));
 
     // 中间 1
-    let iso = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
+    //let iso = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(145.0, 184.0, 125.0),
         33.0,
-        Arc::<Isotropic>::new(Isotropic::new(iso)),
+        Arc::<Diffuse>::new(Diffuse::new(vanan.clone())),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
