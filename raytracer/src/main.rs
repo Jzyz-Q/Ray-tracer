@@ -59,7 +59,7 @@ fn main() {
 
     let width = 500;
     let height = 500;
-    let spp = 4000;
+    let spp = 2000;
     let max_depth = 50;
     let background = Vec3::zero();
 
