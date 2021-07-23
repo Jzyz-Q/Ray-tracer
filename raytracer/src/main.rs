@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 5000;
+    let spp = 3000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -907,6 +907,7 @@ fn cloud() -> Hlist {
         34.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
@@ -992,6 +993,7 @@ fn cloud() -> Hlist {
         37.5,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
