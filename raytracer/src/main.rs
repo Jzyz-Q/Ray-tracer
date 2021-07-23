@@ -961,6 +961,7 @@ fn cloud() -> Hlist {
         35.0,
         Arc::<Diffuse>::new(Diffuse::new(v.clone())),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
@@ -973,6 +974,7 @@ fn cloud() -> Hlist {
         35.0,
         Arc::<Diffuse>::new(Diffuse::new(v)),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
