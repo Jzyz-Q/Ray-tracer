@@ -836,7 +836,7 @@ fn cloud() -> Hlist {
 
     // 1左下角
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(112.0, 201.0, 145.0),
+        Vec3::new(112.0, 201.0, 155.0),
         40.0,
         Arc::<Diffuse>::new(Diffuse::new(v.clone())),
     ));
@@ -850,19 +850,10 @@ fn cloud() -> Hlist {
     // 2右下角
     // cloud
     let path = Path::new("cloud.jpg");
-
     let imgtext1 = Arc::<ImageTexture>::new(ImageTexture::new(path));
-    objects.push(Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(220.0, 280.0, 300.0),
-        70.0,
-        Arc::<Diffuse>::new(Diffuse::new(imgtext1)),
-    )));
-    
-    let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(433.0, 171.0, 180.0),
-        40.0,
-        imgtext1,
-    ));
+    let cloud = Arc::<Diffuse>::new(Diffuse::new(imgtext1));
+
+    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(433.0, 171.0, 180.0), 40.0, cloud));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
@@ -873,7 +864,7 @@ fn cloud() -> Hlist {
     // 中间 1
     let iso = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(145.0, 184.0, 130.0),
+        Vec3::new(145.0, 184.0, 125.0),
         33.0,
         Arc::<Isotropic>::new(Isotropic::new(iso)),
     ));
@@ -960,7 +951,7 @@ fn cloud() -> Hlist {
     )));
 
     // 8
-    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 150.0), 50.0, surface));
+    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 150.0), 55.0, surface));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
