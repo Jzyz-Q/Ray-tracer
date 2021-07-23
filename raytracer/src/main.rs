@@ -11,8 +11,8 @@ mod vec3;
 use crate::bvh::Boxes;
 use crate::bvh::BvhNode;
 use crate::bvh::ConstantMedium;
-use crate::bvh::RotateY;
-use crate::bvh::Translate;
+// use crate::bvh::RotateY;
+// use crate::bvh::Translate;
 use crate::bvh::Xyrect;
 use crate::bvh::Xzrect;
 use crate::bvh::Yzrect;
@@ -57,9 +57,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 500;
-    let height = 500;
-    let spp = 2000;
+    let width = 200;
+    let height = 200;
+    let spp = 200;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -748,7 +748,7 @@ fn cloud() -> Hlist {
     )));
 
     // background && ground
-    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.9)));
+    let s1 = Arc::<Solid>::new(Solid::new(Vec3::new(0.498, 0.533, 0.796)));
     let ground = Arc::<Lambertian>::new(Lambertian::new(s1));
 
     let vb = Arc::<Solid>::new(Solid::new(Vec3::new(0.184, 0.2157, 0.4588)));
@@ -765,7 +765,7 @@ fn cloud() -> Hlist {
             let y1: f64 = random_double_limit(1.0, 101.0);
             let z1: f64 = z0 + w;
 
-            let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(1.0, 1.0, 1.0)));
+            /* let v1 = Arc::<Solid>::new(Solid::new(Vec3::new(1.0, 1.0, 1.0)));
 
             let box1 = Arc::<Boxes>::new(Boxes::new(
                 &Vec3::new(x0, y0, z0),
@@ -776,13 +776,13 @@ fn cloud() -> Hlist {
             let box1 =
                 Arc::<Translate>::new(Translate::new(box1.clone(), &Vec3::new(0.0, 0.0, 0.0)));
             let box1 = Arc::<ConstantMedium>::new(ConstantMedium::new(box1.clone(), 0.01, v1));
-            boxes1.push(box1);
+            boxes1.push(box1); */
 
-            /* boxes1.push(Arc::<Boxes>::new(Boxes::new(
+            boxes1.push(Arc::<Boxes>::new(Boxes::new(
                 &Vec3::new(x0, y0, z0),
                 &Vec3::new(x1, y1, z1),
                 ground.clone(),
-            ))); */
+            )));
         }
     }
     objects.push(Arc::<BvhNode>::new(BvhNode::new_list(boxes1, 0.0, 1.0)));
@@ -955,10 +955,11 @@ fn cloud() -> Hlist {
     )));
 
     // 9
+    let v = Arc::<Solid>::new(Solid::new(Vec3::new(7.0, 7.0, 7.0)));
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(304.0, 234.0, 155.0),
         35.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(v.clone())),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
@@ -970,7 +971,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(348.0, 256.0, 170.0),
         35.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(v)),
     ));
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
