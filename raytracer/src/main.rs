@@ -866,7 +866,7 @@ fn cloud() -> Hlist {
     // 中间 1
     //let iso = Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.886)));
     let boundary = Arc::<Sphere>::new(Sphere::new(
-        Vec3::new(145.0, 184.0, 125.0),
+        Vec3::new(145.0, 184.0, 110.0),
         33.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
@@ -896,12 +896,12 @@ fn cloud() -> Hlist {
         34.0,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
-    group.push(boundary.clone());
-    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+    group.push(boundary);
+    /* group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.976))),
-    )));
+    ))); */
 
     // 4
     let boundary = Arc::<Sphere>::new(Sphere::new(
@@ -995,12 +995,12 @@ fn cloud() -> Hlist {
         37.5,
         Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
-    group.push(boundary.clone());
-    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+    group.push(boundary);
+    /* group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.956))),
-    )));
+    ))); */
 
     // 12
     let boundary = Arc::<Sphere>::new(Sphere::new(
