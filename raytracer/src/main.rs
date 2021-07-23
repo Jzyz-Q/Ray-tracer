@@ -57,9 +57,9 @@ fn main() {
         is_ci, n_jobs, n_workers
     );
 
-    let width = 400;
-    let height = 400;
-    let spp = 3000;
+    let width = 200;
+    let height = 200;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -829,6 +829,7 @@ fn cloud() -> Hlist {
     )));
 
     let v = Arc::<Solid>::new(Solid::new(Vec3::new(0.6, 0.6, 0.6)));
+    let van = Arc::<Solid>::new(Solid::new(Vec3::new(0.2, 0.2, 0.2)));
 
     let path = Path::new("surface.jpg");
     let imgtext = Arc::<ImageTexture>::new(ImageTexture::new(path));
@@ -891,8 +892,9 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(225.0, 180.0, 150.0),
         34.0,
-        Arc::<Dielectric>::new(Dielectric::new(1.5)),
+        Arc::<Diffuse>::new(Diffuse::new(van.clone())),
     ));
+    group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
