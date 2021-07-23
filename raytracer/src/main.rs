@@ -59,7 +59,7 @@ fn main() {
 
     let width = 400;
     let height = 400;
-    let spp = 5000;
+    let spp = 1000;
     let max_depth = 50;
     let background = Vec3::zero();
 
@@ -868,14 +868,14 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(145.0, 184.0, 125.0),
         33.0,
-        Arc::<Diffuse>::new(Diffuse::new(vanan)),
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(boundary.clone());
-    group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
+    /* group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
         0.2,
         Arc::<Solid>::new(Solid::new(Vec3::new(0.98, 0.98, 0.98))),
-    )));
+    ))); */
 
     // 2
     let boundary = Arc::<Sphere>::new(Sphere::new(
@@ -894,7 +894,7 @@ fn cloud() -> Hlist {
     let boundary = Arc::<Sphere>::new(Sphere::new(
         Vec3::new(225.0, 180.0, 150.0),
         34.0,
-        Arc::<Diffuse>::new(Diffuse::new(van.clone())),
+        Arc::<Dielectric>::new(Dielectric::new(1.5)),
     ));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
@@ -956,7 +956,7 @@ fn cloud() -> Hlist {
     )));
 
     // 8
-    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 125.0), 55.0, surface));
+    let boundary = Arc::<Sphere>::new(Sphere::new(Vec3::new(229.0, 249.0, 110.0), 55.0, surface));
     group.push(boundary.clone());
     group.push(Arc::<ConstantMedium>::new(ConstantMedium::new(
         boundary,
